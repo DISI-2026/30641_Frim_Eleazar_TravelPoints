@@ -2,8 +2,10 @@ import { Outlet } from 'react-router-dom'
 
 import { Container, Nav, Navbar, Button, NavDropdown } from 'react-bootstrap'
 import './Layout.css'
+import { useLogin } from '../context/AuthContext'
 
 export default function Layout() {
+    const { isLoggedIn, email } = useLogin()
     return (
         <>
             <Navbar bg='light' expand='lg' sticky='top' className='navbar-custom'>
@@ -22,12 +24,19 @@ export default function Layout() {
                                 <NavDropdown.Item href="/destinations/dubai">Dubai</NavDropdown.Item>
                                 <NavDropdown.Item href="/destinations/newyork">New York</NavDropdown.Item>
                             </NavDropdown>
+
+                            {
+                                isLoggedIn ?
+                                    <p>Salut, { email }</p>
+                                    :
                             <Button 
                                 className='btn-slim btn-orange' 
                                 href="/login"
                             >
                                 Log in
                             </Button>
+                            }
+
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

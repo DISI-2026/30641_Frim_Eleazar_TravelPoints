@@ -13,12 +13,12 @@
       "responses": [
         {
           "uuid": "7x8y9z0a-b1c2-d3e4-f5a6-b7c8d9e0f1a2",
-          "body": "HERE YOU HAVE THE JWT :)",
+          "body": "{\"success\": true}",
           "statusCode": 200,
           "headers": [
             {
               "key": "Content-Type",
-              "value": "text/plain"
+              "value": "application/json"
             },
             {
               "key": "Authorization",

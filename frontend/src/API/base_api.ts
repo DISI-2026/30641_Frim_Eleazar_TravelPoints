@@ -10,10 +10,11 @@ const auth_endpoint = location + (import.meta.env.VITE_AUTH_API || "/auth")
 
 export const authAPI = axios.create({ baseURL: auth_endpoint })
 
-export type ResponseType<K extends string, V = string> = 
-    | ({ success: true } & Record<K, V>)
+export type ResponseType<K extends string | undefined = undefined, V = string> = 
+    | (K extends undefined 
+        ? { success: true }
+        : { success: true } & Record<K extends string ? K : string, V>)
     | { success: false; error: string }
-
 
 export function saveAuthToken(token: string) {
     cookies.set(TOKEN_NAME, token, { path: '/', maxAge: 60 * 30 });
@@ -31,7 +32,6 @@ function requestInterceptor(request: InternalAxiosRequestConfig) {
     const token = loadAuthToken();
     if (token) {
         request.headers[TOKEN_NAME] = `Bearer ${token}`
-        console.warn(token)
     }
     return request
 }
