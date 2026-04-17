@@ -6,8 +6,9 @@ import { LoginProvider } from '../context/AuthContext'
 
 import Layout from './Layout'
 import NotFound from './NotFound'
-import { SignIn } from './SignIn'
+import { Register } from './Register'
 import { Landing } from './Landing'
+import LogIn from './LogIn'
 
 const queryClient = new QueryClient()
 
@@ -19,7 +20,8 @@ export default function App() {
           <Routes>
             <Route path='/' element={<Layout />}>
               <Route index element={<Landing />} />
-              <Route path='signin' element={<SignIn />} />
+              <Route path='register' element={<Register />} />
+              <Route path='login' element={<LogIn />} />
               <Route path='noaccess' element={<p> Acces restrictionat </p>} />
               <Route path='profile' element={<p> Profil </p>} />
             </Route>

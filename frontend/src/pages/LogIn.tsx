@@ -1,49 +1,29 @@
+
 import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import './SignIn.css'
-
-function check_mail(mail: string | undefined): boolean {
-    if (!mail) {
-        return false
-    }
-
-    if (mail.length < 8) {
-        return false
-    }
-
-    // pagina doar pt regexuri de mail
-    // https://www.regular-expressions.info/email.html
-    return /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-        .test(mail)
-}
+import './LogIn.css'
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
-        .required("Email-ul este obligatoriu")
-        .test("valid-email", "Email-ul este invalid", check_mail),
+        .required("Va rugam introduceti email-ul"),
     password: Yup.string()
-        .min(8, "Parola trebuie sa aiba cel putin 8 caractere")
-        .required("Parola este obligatorie"),
-    confirmPassword: Yup.string()
-        .oneOf([Yup.ref("password")], "Parolele nu se potrivesc")
-        .required("Confirmarea parolei este obligatorie"),
+        .required("Va rugam introduceti parola"),
 });
 
-export function SignIn() {
+export default function LogIn() {
     return (
-        <div className='signin-section'>
-            <div className='signin-overlay'></div>
-            <div className='signin-content'>
-                <div className='signin-form-wrapper'>
-                    <h1 className='signin-title'>Creaza cont</h1>
-                    <h2 className='signin-title'>{import.meta.env.KEY}</h2>
+        <div className='login-section'>
+            <div className='login-overlay'></div>
+            <div className='login-content'>
+                <div className='login-form-wrapper'>
+                    <h1 className='login-title'>Conecteaza-te</h1>
+                    <p className='login-subtitle'>Bun revenire pe TravelPoints</p>
 
                     <Formik
                         initialValues={{
                             email: "",
                             password: "",
-                            confirmPassword: "",
                         }}
                         validationSchema={validationSchema}
                         onSubmit={(values) => {
@@ -51,7 +31,7 @@ export function SignIn() {
                         }}
                     >
                         {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
-                            <Form onSubmit={handleSubmit} className='signin-form'>
+                            <Form onSubmit={handleSubmit} className='login-form'>
                                 <Form.Group className="mb-3">
                                     <Form.Label className='form-label'>Email</Form.Label>
                                     <Form.Control
@@ -69,7 +49,7 @@ export function SignIn() {
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
-                                <Form.Group className="mb-3">
+                                <Form.Group className="mb-4">
                                     <Form.Label className='form-label'>Parola</Form.Label>
                                     <Form.Control
                                         type="password"
@@ -85,34 +65,18 @@ export function SignIn() {
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
-                                <Form.Group className="mb-4">
-                                    <Form.Label className='form-label'>Confirma parola</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        name="confirmPassword"
-                                        value={values.confirmPassword}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        isInvalid={touched.confirmPassword && !!errors.confirmPassword}
-                                        className='form-input'
-                                    />
-                                    <Form.Control.Feedback type="invalid" className='error-text'>
-                                        {errors.confirmPassword}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
                                 <Button
                                     type="submit"
                                     className='btn-orange btn-glow w-100'
                                 >
-                                    Creeaza cont
+                                    Conecteaza-te
                                 </Button>
                             </Form>
                         )}
                     </Formik>
 
-                    <p className='signin-footer'>
-                        Ai deja cont? <a href="/login" className='signin-link'>Conecteaza-te</a>
+                    <p className='login-footer'>
+                        Nu ai cont? <a href="/register" className='login-link'>Creeaza-l acum</a>
                     </p>
                 </div>
             </div>

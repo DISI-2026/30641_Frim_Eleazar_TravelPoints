@@ -66,10 +66,12 @@ export function LoginProvider({ children }: { children: ReactNode }) {
 
     const loginFn = async (username: string, password: string): Promise<string | undefined> => {
         setDataLoading(true)
+        console.warn(username, password)
         return undefined // TODO:
     }
-
+    
     const registerFn = async (username: string, password: string): Promise<string | undefined> => {
+        console.warn(username, password)
         setDataLoading(true)
         return undefined // TODO:
     }

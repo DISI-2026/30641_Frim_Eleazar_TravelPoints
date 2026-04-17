@@ -5,10 +5,15 @@ const cookies = new Cookies();
 
 const TOKEN_NAME = 'authorization'
 
-const location = window.location.host
-const auth_endpoint = location + (import.meta.env.VITE_DEVICE_URI || "/api")
+const location = import.meta.env.VITE_API_ENTRYPOINT || window.location.host
+const auth_endpoint = location + (import.meta.env.VITE_AUTH_API || "/auth")
 
 export const authAPI = axios.create({ baseURL: auth_endpoint })
+
+export type ResponseType<K extends string, V = string> = 
+    | ({ success: true } & Record<K, V>)
+    | { success: false; error: string }
+
 
 export function saveAuthToken(token: string) {
     cookies.set(TOKEN_NAME, token, { path: '/', maxAge: 60 * 30 });

@@ -24,9 +24,9 @@ export default function Layout() {
                             </NavDropdown>
                             <Button 
                                 className='btn-slim btn-orange' 
-                                href="/signin"
+                                href="/login"
                             >
-                                Sign In
+                                Log in
                             </Button>
                         </Nav>
                     </Navbar.Collapse>
