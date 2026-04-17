@@ -37,6 +37,7 @@ export function SignIn() {
             <div className='signin-content'>
                 <div className='signin-form-wrapper'>
                     <h1 className='signin-title'>Creaza cont</h1>
+                    <h2 className='signin-title'>{import.meta.env.KEY}</h2>
 
                     <Formik
                         initialValues={{
