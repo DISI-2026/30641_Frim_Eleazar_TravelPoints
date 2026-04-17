@@ -9,7 +9,7 @@
     {
       "uuid": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
       "method": "post",
-      "endpoint": "/auth",
+      "endpoint": "/auth/register",
       "responses": [
         {
           "uuid": "7x8y9z0a-b1c2-d3e4-f5a6-b7c8d9e0f1a2",
@@ -21,8 +21,24 @@
               "value": "text/plain"
             },
             {
-              "key": "authorization",
-              "value": "JWT-12345678910"
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": "Content-Type, Authorization, X-Requested-With"
+            },
+            {
+              "key": "Access-Control-Expose-Headers",
+              "value": "authorization, Authorization"
             }
           ],
           "isDefault": true

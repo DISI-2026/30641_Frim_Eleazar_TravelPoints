@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { eraseLocalStorageLogin, getLocalStorageLogin, setLocalStorageLogin } from './LocalLoginSave'
 import { loadAuthToken } from '../API/base_api'
 import LoadingPlaceholder from '../components/LoadingPlaceholder'
+import { registerUser } from '../API/auth_api'
 
 interface ILogin {
-    userId: number,
-    username: string,
+    email: string,
     isLoggedIn: boolean,
-    loginFn: (username: string, password: string) => Promise<string | undefined>,
-    registerFn: (username: string, password: string) => Promise<string | undefined>,
+    loginFn: (email: string, password: string) => Promise<string | true>,
+    registerFn: (email: string, password: string) => Promise<string | true>,
     logoutFn: () => void
 }
 
@@ -25,23 +25,20 @@ export function useLogin() {
 }
 
 export function LoginProvider({ children }: { children: ReactNode }) {
-    const [username, setUsername] = useState('')
-    const [userId, setUserId] = useState(0)
+    const [email, setEmail] = useState('')
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [dataLoading, setDataLoading] = useState(true)
 
-    const innerLogin = (username?: string, userId?: number) => {
-        if (username === undefined || userId === undefined) {
-            setUsername('')
-            setUserId(0)
+    const innerLogin = (email?: string) => {
+        if (email === undefined) {
+            setEmail('')
             setIsLoggedIn(false)
             eraseLocalStorageLogin()
             return
         }
-        setUsername(username)
-        setUserId(userId)
+        setEmail(email)
         setIsLoggedIn(true)
-        setLocalStorageLogin({ userId, username })
+        setLocalStorageLogin({ email })
     }
 
     useEffect(() => {
@@ -50,30 +47,36 @@ export function LoginProvider({ children }: { children: ReactNode }) {
             const login = getLocalStorageLogin()
 
             if (token === undefined || login === undefined) {
-                setUsername('')
-                setUserId(0)
+                setEmail('')
                 setIsLoggedIn(false)
                 setDataLoading(false)
                 return
             }
 
-            innerLogin(login.username, login.userId)
+            innerLogin(login.email)
             setDataLoading(false)
         }
 
         initialize_fields()
     }, [])
 
-    const loginFn = async (username: string, password: string): Promise<string | undefined> => {
+    const loginFn = async (email: string, password: string): Promise<string | true> => {
         setDataLoading(true)
-        console.warn(username, password)
-        return undefined // TODO:
+        return true // TODO:
     }
-    
-    const registerFn = async (username: string, password: string): Promise<string | undefined> => {
-        console.warn(username, password)
-        setDataLoading(true)
-        return undefined // TODO:
+
+    const registerFn = async (email: string, password: string): Promise<string | true> => {
+        return registerUser({ email, password }).then(res => {
+            if (res.success) {
+                innerLogin(email)
+                return true
+            } else {
+                return res.error
+            }
+        }).catch(err => {
+            const errorMessage = err instanceof Error ? err.message : "A aparut o eroare la autentificare";
+            return errorMessage;
+        }).finally(() => setDataLoading(false))
     }
 
     const logoutFn = () => {
@@ -85,8 +88,7 @@ export function LoginProvider({ children }: { children: ReactNode }) {
 
     return <LoginContext.Provider value={{
         isLoggedIn,
-        userId,
-        username,
+        email,
         loginFn,
         registerFn,
         logoutFn

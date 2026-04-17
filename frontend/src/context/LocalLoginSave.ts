@@ -1,7 +1,6 @@
 
 export interface ILocalStorageLogin {
-    userId: number,
-    username: string
+    email: string
 }
 
 export function getLocalStorageLogin(): ILocalStorageLogin | undefined {

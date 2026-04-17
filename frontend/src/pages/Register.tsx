@@ -2,6 +2,7 @@ import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import './Register.css'
+import { useLogin } from "../context/AuthContext";
 
 function check_mail(mail: string | undefined): boolean {
     if (!mail) {
@@ -31,6 +32,16 @@ const validationSchema = Yup.object().shape({
 });
 
 export function Register() {
+    const { registerFn } = useLogin();
+
+    const onSubmit = async (values: { email: string; password: string }) => {
+        const response = await registerFn(values.email, values.password)
+        if (response !== true)
+        {
+            alert(response)
+        }
+    }
+
     return (
         <div className='signin-section'>
             <div className='signin-overlay'></div>
@@ -46,9 +57,7 @@ export function Register() {
                             confirmPassword: "",
                         }}
                         validationSchema={validationSchema}
-                        onSubmit={(values) => {
-                            console.log(values);
-                        }}
+                        onSubmit={onSubmit}
                     >
                         {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
                             <Form onSubmit={handleSubmit} className='signin-form'>

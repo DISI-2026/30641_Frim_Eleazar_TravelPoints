@@ -27,11 +27,11 @@ export function loadAuthToken(): string | undefined {
     return cookies.get(TOKEN_NAME) as string | undefined;
 }
 
-
 function requestInterceptor(request: InternalAxiosRequestConfig) {
     const token = loadAuthToken();
     if (token) {
         request.headers[TOKEN_NAME] = `Bearer ${token}`
+        console.warn(token)
     }
     return request
 }
