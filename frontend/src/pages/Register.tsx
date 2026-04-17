@@ -1,4 +1,3 @@
-import { redirect } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -42,7 +41,7 @@ export function Register() {
             alert(response)
         }
 
-        window.location.href = "/"
+        window.location.href = "/login"
     }
 
     return (

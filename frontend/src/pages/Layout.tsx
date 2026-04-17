@@ -5,12 +5,12 @@ import './Layout.css'
 import { useLogin } from '../context/AuthContext'
 
 export default function Layout() {
-    const { isLoggedIn, email } = useLogin()
+    const { isLoggedIn, logoutFn } = useLogin()
     return (
         <>
             <Navbar bg='light' expand='lg' sticky='top' className='navbar-custom'>
                 <Container fluid className='px-5'>
-                    <Navbar.Brand href="/" className='fw-bolder fs-4 m-0 p-0' style={{color: '#000000', fontWeight: '900'}}>
+                    <Navbar.Brand href="/" className='fw-bolder fs-4 m-0 p-0' style={{ color: '#000000', fontWeight: '900' }}>
                         TravelPoints
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -27,14 +27,16 @@ export default function Layout() {
 
                             {
                                 isLoggedIn ?
-                                    <p>Salut, { email }</p>
+                                    <Button className='btn-slim btn-orange'
+                                        onClick={logoutFn}>
+                                        Deconectare
+                                    </Button>
                                     :
-                            <Button 
-                                className='btn-slim btn-orange' 
-                                href="/login"
-                            >
-                                Log in
-                            </Button>
+                                    <Button
+                                        className='btn-slim btn-orange'
+                                        href="/login">
+                                        Log in
+                                    </Button>
                             }
 
                         </Nav>
