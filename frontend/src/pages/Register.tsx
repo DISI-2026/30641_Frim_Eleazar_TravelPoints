@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import './Register.css'
 import { useLogin } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function check_mail(mail: string | undefined): boolean {
     if (!mail) {
@@ -33,6 +34,7 @@ const validationSchema = Yup.object().shape({
 
 export function Register() {
     const { registerFn } = useLogin();
+    const navigate = useNavigate();
 
     const onSubmit = async (values: { email: string; password: string }) => {
         const response = await registerFn(values.email, values.password)
@@ -41,7 +43,7 @@ export function Register() {
             alert(response)
         }
 
-        window.location.href = "/login"
+        navigate("/login")
     }
 
     return (

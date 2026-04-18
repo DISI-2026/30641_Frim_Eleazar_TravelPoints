@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { eraseLocalStorageLogin, getLocalStorageLogin, setLocalStorageLogin } from './LocalLoginSave'
 import { loadAuthToken } from '../API/base_api'
 import LoadingPlaceholder from '../components/LoadingPlaceholder'
-import { registerUser } from '../API/auth_api'
+import { loginUser, logoutUser, registerUser } from '../API/auth_api'
 
 interface ILogin {
     email: string,
@@ -62,15 +62,12 @@ export function LoginProvider({ children }: { children: ReactNode }) {
 
     const loginFn = async (email: string, password: string): Promise<string | true> => {
         setDataLoading(true)
-        return true // TODO:
-    }
-
-    const registerFn = async (email: string, password: string): Promise<string | true> => {
-        return registerUser({ email, password }).then(res => {
+        return loginUser({ email, password }).then(res => {
             if (res.success) {
                 innerLogin(email)
                 return true
-            } else {
+            }
+            else {
                 return res.error
             }
         }).catch(err => {
@@ -79,8 +76,24 @@ export function LoginProvider({ children }: { children: ReactNode }) {
         }).finally(() => setDataLoading(false))
     }
 
+    const registerFn = async (email: string, password: string): Promise<string | true> => {
+        setDataLoading(true)
+        return registerUser({ email, password }).then(res => {
+            if (res.success) {
+                innerLogin(email)
+                return true
+            } else {
+                return res.error
+            }
+        }).catch(err => {
+            const errorMessage = err instanceof Error ? err.message : "A aparut o eroare la inregistrare";
+            return errorMessage;
+        }).finally(() => setDataLoading(false))
+    }
+
     const logoutFn = () => {
         innerLogin()
+        logoutUser()
     }
 
     if (dataLoading)
