@@ -28,6 +28,18 @@ export function loadAuthToken(): string | undefined {
     return cookies.get(TOKEN_NAME) as string | undefined;
 }
 
+export function returnResponseWithDefaultError<K extends string | undefined, V>(res: ResponseType<K, V>, defaultErrorMessage: string): ResponseType<K, V> {
+    if (res.success) {
+        return res
+    }
+
+    if (res.error === undefined) {
+        return {...res, error:defaultErrorMessage}
+    }
+
+    return res
+}
+
 function requestInterceptor(request: InternalAxiosRequestConfig) {
     const token = loadAuthToken();
     if (token) {

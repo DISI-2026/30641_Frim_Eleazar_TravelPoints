@@ -13,4 +13,8 @@ docker run -d \
     --name "DISI-Mockoon-API" \
     mockoon/cli:latest \
     --data data.json \
+    --log-transaction \
     --watch \
+
+echo "Application started"
+docker logs DISI-Mockoon-API -f | python3 -m json.tool --json-lines

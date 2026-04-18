@@ -1,6 +1,4 @@
 {
-  "source": "mockoon:8.0.0",
-  "version": 9,
   "lastMigration": 33,
   "name": "DISI API",
   "uuid": "965672b5-d49f-4da2-a6cb-4e0d0ad5930e",
@@ -12,7 +10,7 @@
       "endpoint": "/auth/register",
       "responses": [
         {
-          "uuid": "7x8y9z0a-b1c2-d3e4-f5a6-b7c8d9e0f1a2",
+          "uuid": "eb926c7f-02e0-4741-950b-f96bc1757321",
           "body": "{\"success\": true}",
           "statusCode": 200,
           "headers": [
@@ -41,9 +39,98 @@
               "value": "authorization, Authorization"
             }
           ],
-          "isDefault": true
+          "latency": 0,
+          "label": "Success",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "password",
+              "value": "12345678",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "9b791ad3-4890-4efe-ab05-e6aa58b459fd",
+          "body": "{\"success\":false}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Esec necunoscut",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "0b631909-8619-4638-bd54-3e55539e553a",
+          "body": "{\"success\":false, \"error\":\"Email deja folosit\"}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Email deja folosit",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "email",
+              "value": "user123@gmail.com",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
         }
-      ]
+      ],
+      "type": "http",
+      "documentation": "",
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     },
     {
       "uuid": "1a2b3c4d-e5f6-3a8b-9c0d-1e2f3a4b5c5f",
@@ -51,7 +138,7 @@
       "endpoint": "/auth/login",
       "responses": [
         {
-          "uuid": "7x8y9z3a-b1c2-d3e4-f5b6-b7c8d9e0f1a2",
+          "uuid": "435f2d18-bd1c-4db5-9c1f-6a7e07da54c2",
           "body": "{\"success\": true}",
           "statusCode": 200,
           "headers": [
@@ -80,9 +167,98 @@
               "value": "authorization, Authorization"
             }
           ],
-          "isDefault": true
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "password",
+              "value": "12345678",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "default": false,
+          "latency": 0,
+          "label": "Succces la autentificare",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "2015075c-9a7a-45d4-9075-c42cbb65e008",
+          "body": "{\"success\": false, \"error\": \"Test login-fail\"}",
+          "statusCode": 200,
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "rules": [],
+          "rulesOperator": "OR",
+          "latency": 0,
+          "label": "Parola gresita",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
         }
-      ]
+      ],
+      "type": "http",
+      "documentation": "",
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
-  ]
+  ],
+  "endpointPrefix": "",
+  "latency": 0,
+  "hostname": "",
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+    },
+    {
+      "type": "route",
+      "uuid": "1a2b3c4d-e5f6-3a8b-9c0d-1e2f3a4b5c5f"
+    }
+  ],
+  "folders": [],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [],
+  "proxyReqHeaders": [],
+  "proxyResHeaders": [],
+  "data": [],
+  "callbacks": []
 }
