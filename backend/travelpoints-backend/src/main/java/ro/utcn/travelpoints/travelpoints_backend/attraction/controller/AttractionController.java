@@ -1,5 +1,10 @@
 package ro.utcn.travelpoints.travelpoints_backend.attraction.controller;
-
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import ro.utcn.travelpoints.travelpoints_backend.attraction.dto.UpdateAttractionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +45,19 @@ public class AttractionController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<AttractionResponse> updateAttraction(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateAttractionRequest request
+    ) {
+        AttractionResponse response = attractionService.updateAttraction(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAttraction(@PathVariable UUID id) {
+        attractionService.deleteAttraction(id);
+        return ResponseEntity.noContent().build();
     }
 }

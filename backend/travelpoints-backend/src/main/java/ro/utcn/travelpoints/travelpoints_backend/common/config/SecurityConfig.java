@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/attractions/*").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/attractions/*").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
