@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ro.utcn.travelpoints.travelpoints_backend.auth.dto.LoginRequest;
 import ro.utcn.travelpoints.travelpoints_backend.auth.dto.LoginResponse;
+import ro.utcn.travelpoints.travelpoints_backend.auth.dto.RegisterRequest;
+import ro.utcn.travelpoints.travelpoints_backend.auth.dto.RegisterResponse;
 import ro.utcn.travelpoints.travelpoints_backend.auth.service.AuthService;
 
 @RestController
@@ -32,11 +34,19 @@ public class AuthController {
                     .body(LoginResponse.ok());
 
         } catch (BadCredentialsException | UsernameNotFoundException ex) {
-            // 401 Unauthorized
-            // Mesaj 
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(LoginResponse.fail("Invalid email or password"));
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+        String token = authService.register(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .header("Authorization", "Bearer " + token)
+                .body(RegisterResponse.ok());
     }
 }
