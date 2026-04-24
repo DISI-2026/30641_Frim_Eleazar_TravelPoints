@@ -1,18 +1,32 @@
-import { authAPI, type ResponseType } from "./base_api";
+import { authAPI, removeAuthToken, returnResponseWithDefaultError as responseWithDefaultError, type ResponseType } from "./base_api";
 
-export type RegisterRequestType = {
+export type RegisterLoginRequestType = {
     email: string,
     password: string
 }
 
 type TokenResponseType = ResponseType
 
-export async function registerUser(data: RegisterRequestType): Promise<TokenResponseType> {
+export async function registerUser(data: RegisterLoginRequestType): Promise<TokenResponseType> {
     try {
-        const response = await authAPI.post<TokenResponseType>("/register", null, { params: data });
-        return response.data;
+        const response = await authAPI.post<TokenResponseType>("/register", data);
+        return responseWithDefaultError(response.data, "Problema la integistrare")
     } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An error occurred during registration";
+        const errorMessage = err instanceof Error ? err.message : "Problema la integistrare";
         return { success: false, error: errorMessage };
     }
+}
+
+export async function loginUser(data: RegisterLoginRequestType): Promise<TokenResponseType> {
+    try {
+        const response = await authAPI.post<TokenResponseType>("/login", data);
+        return responseWithDefaultError(response.data, "Problema la autentificare")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la autentificare";
+        return { success: false, error: errorMessage };
+    }
+}
+
+export async function logoutUser() {
+    removeAuthToken()
 }

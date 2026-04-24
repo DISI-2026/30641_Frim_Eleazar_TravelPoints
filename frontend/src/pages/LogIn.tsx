@@ -3,6 +3,8 @@ import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import './LogIn.css'
+import { useLogin } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -12,6 +14,19 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function LogIn() {
+    const { loginFn } = useLogin();
+    const navigate = useNavigate();
+
+    const onSubmit = async (values: { email: string; password: string }) => {
+        const response = await loginFn(values.email, values.password)
+        if (response !== true)
+        {
+            alert(response)
+        }
+
+        navigate("/login")
+    }
+
     return (
         <div className='login-section'>
             <div className='login-overlay'></div>
@@ -26,9 +41,7 @@ export default function LogIn() {
                             password: "",
                         }}
                         validationSchema={validationSchema}
-                        onSubmit={(values) => {
-                            console.log(values);
-                        }}
+                        onSubmit={onSubmit}
                     >
                         {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
                             <Form onSubmit={handleSubmit} className='login-form'>
