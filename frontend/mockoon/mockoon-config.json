@@ -1,4 +1,6 @@
 {
+  "source": "mockoon:8.0.0",
+  "version": 9,
   "lastMigration": 33,
   "name": "DISI API",
   "uuid": "965672b5-d49f-4da2-a6cb-4e0d0ad5930e",
@@ -10,7 +12,7 @@
       "endpoint": "/auth/register",
       "responses": [
         {
-          "uuid": "eb926c7f-02e0-4741-950b-f96bc1757321",
+          "uuid": "7x8y9z0a-b1c2-d3e4-f5a6-b7c8d9e0f1a2",
           "body": "{\"success\": true}",
           "statusCode": 200,
           "headers": [

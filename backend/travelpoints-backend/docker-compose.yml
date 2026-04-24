@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: travelpoints-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: travelpoints
+      POSTGRES_USER: travelpoints_user
+      POSTGRES_PASSWORD: travelpoints_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - travelpoints_pgdata:/var/lib/postgresql/data
+
+volumes:
+  travelpoints_pgdata:
+    name: travelpoints_pgdata
