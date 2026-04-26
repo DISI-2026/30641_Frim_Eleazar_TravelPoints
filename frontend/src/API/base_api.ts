@@ -7,13 +7,15 @@ const TOKEN_NAME = 'authorization'
 
 const location = import.meta.env.VITE_API_ENTRYPOINT || window.location.host
 const auth_endpoint = location + (import.meta.env.VITE_AUTH_API || "/auth")
+const attraction_endpoint = location + (import.meta.env.VITE_ATTRACTION_API || "/attraction")
 
 export const authAPI = axios.create({ baseURL: auth_endpoint })
+export const attractionAPI = axios.create({ baseURL: attraction_endpoint })
 
-export type ResponseType<K extends string | undefined = undefined, V = string> = 
-    | (K extends undefined 
+export type ResponseType<D extends object | undefined = undefined> = 
+    | (D extends undefined 
         ? { success: true }
-        : { success: true } & Record<K extends string ? K : string, V>)
+        : { success: true } & D)
     | { success: false; error: string }
 
 export function saveAuthToken(token: string) {
@@ -28,7 +30,7 @@ export function loadAuthToken(): string | undefined {
     return cookies.get(TOKEN_NAME) as string | undefined;
 }
 
-export function returnResponseWithDefaultError<K extends string | undefined, V>(res: ResponseType<K, V>, defaultErrorMessage: string): ResponseType<K, V> {
+export function returnResponseWithDefaultError<D extends object>(res: ResponseType<D>, defaultErrorMessage: string): ResponseType<D> {
     if (res.success) {
         return res
     }
@@ -57,4 +59,6 @@ function responseInterceptor(response: AxiosResponse) {
 }
 
 authAPI.interceptors.request.use(requestInterceptor)
+attractionAPI.interceptors.request.use(requestInterceptor)
+
 authAPI.interceptors.response.use(responseInterceptor)

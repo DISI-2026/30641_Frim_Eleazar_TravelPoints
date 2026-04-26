@@ -1,6 +1,4 @@
 {
-  "source": "mockoon:8.0.0",
-  "version": 9,
   "lastMigration": 33,
   "name": "DISI API",
   "uuid": "965672b5-d49f-4da2-a6cb-4e0d0ad5930e",
@@ -12,7 +10,7 @@
       "endpoint": "/auth/register",
       "responses": [
         {
-          "uuid": "7x8y9z0a-b1c2-d3e4-f5a6-b7c8d9e0f1a2",
+          "uuid": "6c4853dc-4e7d-4313-8954-6a30f5ec006b",
           "body": "{\"success\": true}",
           "statusCode": 200,
           "headers": [
@@ -229,6 +227,50 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "9f2e3a49-5e00-40c6-acc2-05c39ba859a7",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "attraction/create",
+      "responses": [
+        {
+          "uuid": "6f8431df-3314-4299-8a5c-ff79fa87420e",
+          "body": "{\"success\": true}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -242,6 +284,10 @@
     {
       "type": "route",
       "uuid": "1a2b3c4d-e5f6-3a8b-9c0d-1e2f3a4b5c5f"
+    },
+    {
+      "type": "route",
+      "uuid": "9f2e3a49-5e00-40c6-acc2-05c39ba859a7"
     }
   ],
   "folders": [],

@@ -1,0 +1,187 @@
+/* NewAttraction.css - Updated for audio file picker */
+.new-attraction-section {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                url('https://images.unsplash.com/photo-1507842987242-7a07207e632d?w=1600&h=900&fit=crop') center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 40px 20px;
+}
+
+.new-attraction-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 80, 100, 0.5) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 1;
+}
+
+.new-attraction-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+}
+
+.new-attraction-form-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.new-attraction-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Updated form classes for audio file picker */
+.new-attraction-audio-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.audio-file-input {
+    display: none;
+}
+
+.audio-file-input-label {
+    padding: 10px 15px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.audio-file-input-label:hover {
+    border-color: #ff6200;
+    background-color: #ffffff;
+}
+
+.audio-file-input-label::placeholder {
+    color: #999999;
+    font-weight: 600;
+}
+
+.audio-file-name {
+    font-size: 0.9rem;
+    color: #34495e;
+    margin-top: 5px;
+}
+
+.new-attraction-form {
+    width: 100%;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-input {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    min-height: 40px;
+}
+
+.form-input:focus {
+    border-color: #ff6200;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 0.2rem rgba(255, 98, 0, 0.15);
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: #999999;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.error-text {
+    font-size: 0.85rem;
+    margin-top: 5px;
+    color: #dc3545;
+}
+
+.btn-glow {
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, #ff6200, #e64100);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 0.2rem rgba(255, 98, 0, 0.2);
+}
+
+.btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 98, 0, 0.3);
+    background: linear-gradient(90deg, #e64100, #ff6200);
+}
+
+.new-attraction-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.new-attraction-link {
+    color: #ff6200;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.new-attraction-link:hover {
+    color: #e64100;
+    text-decoration: underline;
+}
+
+/* Animation for audio file input */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .new-attraction-title {
+        font-size: 2rem;
+    }
+
+    .new-attraction-form-wrapper {
+        padding: 25px;
+    }
+}
