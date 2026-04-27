@@ -1,5 +1,5 @@
 import { Button, Card, Container, ListGroup, Modal, Spinner } from "react-bootstrap";
-import { getAttractions, type AttractionType } from '../API/attraction_api';
+import { deleteAttraction, getAttractions, updateAttraction, type AttractionType } from '../API/attraction_api';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
 import { AttractionForm } from "./NewAttraction";
@@ -56,19 +56,44 @@ export default function AttractionsPage() {
         )
     }
 
-    const handleConfirmDelete = () => {
-        console.warn("dijabw")
+    const handleConfirmDelete = async () => {
+        if (!attractionToEdit) {
+            console.error("No attraction selected for deletion");
+            return;
+        }
+        await deleteAttraction(attractionToEdit).then((res) => {
+            if (res.success) {
+                setConfirmDelete(false);
+                setAttractionToEdit(null);
+            } else {
+                alert(res.error);
+            }
+        }).catch((err) => {
+            alert((err instanceof Error ? err.message : "Unknown error"));
+        });
     }
 
-    const onSubmitHandler = (values: AttractionType) => {
-        console.log(values)
+    const onSubmitHandler = async (values: AttractionType) => {
+        if(!attractionToEdit) {
+            console.error("No attraction selected for update");
+            return;
+        }
+        await updateAttraction(values).then((res) => {
+            if (res.success) {
+                setAttractionToEdit(null);
+            } else {
+                alert(res.error);
+            }
+        }).catch((err) => {
+            alert((err instanceof Error ? err.message : "Unknown error"));
+        });
     }
 
     return (
         <Container>
             <DeleteModal show={confirmDelete} onHide={() => setConfirmDelete(false)} onConfirm={handleConfirmDelete} />
             {attractionToEdit &&
-                <Modal contentClassName="clear-modal-body" show onHide={() => setAttractionToEdit(null)}><AttractionForm isEditing initialValues={attractionToEdit} onSubmit={onSubmitHandler} /></Modal>
+                <Modal contentClassName="clear-modal-body" show onHide={() => setAttractionToEdit(null)}><AttractionForm isEditing initialValues={attractionToEdit} onSubmitFunc={onSubmitHandler} /></Modal>
             }
 
             <h1>Atracții</h1>
@@ -83,7 +108,7 @@ export default function AttractionsPage() {
                                 <Card.Text>{attraction.location}</Card.Text>
                                 {attraction.audioFile && <audio controls src={URL.createObjectURL(attraction.audioFile)} />}
                                 <Button onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
-                                <Button variant="danger" onClick={() => setConfirmDelete(true)}>Delete</Button>
+                                <Button variant="danger" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
                             </Card.Body>
                         </Card>
                     </ListGroup.Item>

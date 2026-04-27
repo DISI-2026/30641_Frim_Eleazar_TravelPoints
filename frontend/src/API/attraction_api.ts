@@ -34,10 +34,20 @@ export async function getAttractions(): Promise<AttractionListResponseType> {
 
 export async function deleteAttraction(attraction: AttractionType): Promise<ResponseType> {
     try {
-        const response = await attractionAPI.delete<ResponseType>("", {params: {id: attraction.id}});
+        const response = await attractionAPI.delete<ResponseType>(`${attraction.id}`);
         return returnResponseWithDefaultError(response.data, "Problema la stergerea atractiei")
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Problema la stergerea atractiei";
+        return { success: false, error: errorMessage };
+    }
+}
+
+export async function updateAttraction(attraction: AttractionType): Promise<ResponseType> {
+    try {
+        const response = await attractionAPI.put<ResponseType>(`${attraction.id}`, attraction, { headers: { 'Content-Type': 'multipart/form-data' } });
+        return returnResponseWithDefaultError(response.data, "Problema la actualizarea atractiei")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la actualizarea atractiei";
         return { success: false, error: errorMessage };
     }
 }

@@ -36,14 +36,14 @@ export function AttractionForm({ isEditing, initialValues = {
     description: "",
     location: "",
     audioFile: null,
-}, onSubmit }: { isEditing?: boolean, initialValues?: AttractionType, onSubmit: (values: AttractionType) => (Promise<void> | void) }) {
+}, onSubmitFunc }: { isEditing?: boolean, initialValues?: AttractionType, onSubmitFunc: (values: AttractionType) => (Promise<void> | void) }) {
     return (
         <div className="new-attraction-form-wrapper">
             <h1 className="new-attraction-title">{isEditing ? "Editează atracția" : "Creează o nouă atracție"}</h1>
             < Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={onSubmit}
+                onSubmit={onSubmitFunc}
             >
                 {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
                     <Form onSubmit={handleSubmit} className="new-attraction-form">
@@ -156,7 +156,7 @@ export default function NewAttraction() {
         <div className="new-attraction-section">
             <div className="new-attraction-overlay"></div>
             <div className="new-attraction-content">
-                <AttractionForm onSubmit={onSubmitHandler} />
+                <AttractionForm onSubmitFunc={onSubmitHandler} />
 
             </div>
         </div>
