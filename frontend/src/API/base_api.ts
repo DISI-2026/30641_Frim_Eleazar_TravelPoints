@@ -15,7 +15,7 @@ export const attractionAPI = axios.create({ baseURL: attraction_endpoint })
 export type ResponseType<D extends object | undefined = undefined> = 
     | (D extends undefined 
         ? { success: true }
-        : { success: true } & D)
+        : { success: true, data: D})
     | { success: false; error: string }
 
 export function saveAuthToken(token: string) {
@@ -30,7 +30,7 @@ export function loadAuthToken(): string | undefined {
     return cookies.get(TOKEN_NAME) as string | undefined;
 }
 
-export function returnResponseWithDefaultError<D extends object>(res: ResponseType<D>, defaultErrorMessage: string): ResponseType<D> {
+export function returnResponseWithDefaultError<D extends object | undefined>(res: ResponseType<D>, defaultErrorMessage: string): ResponseType<D> {
     if (res.success) {
         return res
     }

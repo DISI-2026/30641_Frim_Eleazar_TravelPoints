@@ -31,10 +31,108 @@ const validationSchema = Yup.object().shape({
         })
 });
 
+export function AttractionForm({ isEditing, initialValues = {
+    name: "",
+    description: "",
+    location: "",
+    audioFile: null,
+}, onSubmit }: { isEditing?: boolean, initialValues?: AttractionType, onSubmit: (values: AttractionType) => (Promise<void> | void) }) {
+    return (
+        <div className="new-attraction-form-wrapper">
+            <h1 className="new-attraction-title">{isEditing ? "Editează atracția" : "Creează o nouă atracție"}</h1>
+            < Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={onSubmit}
+            >
+                {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
+                    <Form onSubmit={handleSubmit} className="new-attraction-form">
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Nume</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                placeholder="Numele atracției"
+                                value={values.name}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.name && !!errors.name}
+                                className="form-input"
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.name}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Descriere</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={4}
+                                name="description"
+                                placeholder="Descrierea atracției"
+                                value={values.description}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.description && !!errors.description}
+                                className="form-input"
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.description}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Locație</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="location"
+                                placeholder="Locația atracției"
+                                value={values.location}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.location && !!errors.location}
+                                className="form-input"
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.location}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Fisier Audio</Form.Label>
+                            <Form.Control
+                                type="file"
+                                name="audioFile"
+                                accept=".mp3,audio/mpeg,audio/wav,audio/x-wav"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                    const file = event.currentTarget.files?.[0];
+                                    setFieldValue('audioFile', file);
+                                }}
+                                className="form-input"
+                                isInvalid={touched.audioFile && !!errors.audioFile}
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.audioFile}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Button
+                            type="submit"
+                            className="btn-orange btn-glow w-100"
+                        >
+                            {isEditing ? "Salvează modificările" : "Creează Atracția"}
+                        </Button>
+                    </Form>
+                )}
+            </Formik >
+        </div>)
+}
+
 export default function NewAttraction() {
     const navigate = useNavigate();
 
-    const onSubmit = async (values:AttractionType) => {
+    const onSubmitHandler = async (values: AttractionType) => {
         console.log("Form Values:", {
             name: values.name,
             description: values.description,
@@ -58,105 +156,8 @@ export default function NewAttraction() {
         <div className="new-attraction-section">
             <div className="new-attraction-overlay"></div>
             <div className="new-attraction-content">
-                <div className="new-attraction-form-wrapper">
-                    <h1 className="new-attraction-title">Creează o nouă atracție</h1>
+                <AttractionForm onSubmit={onSubmitHandler} />
 
-                    <Formik
-                        initialValues={{
-                            name: "",
-                            description: "",
-                            location: "",
-                            audioFile: null,
-                        }}
-                        validationSchema={validationSchema}
-                        onSubmit={onSubmit}
-                    >
-                        {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
-                            <Form onSubmit={handleSubmit} className="new-attraction-form">
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label">Nume</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="name"
-                                        placeholder="Numele atracției"
-                                        value={values.name}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        isInvalid={touched.name && !!errors.name}
-                                        className="form-input"
-                                    />
-                                    <Form.Control.Feedback type="invalid" className="error-text">
-                                        {errors.name}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label">Descriere</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={4}
-                                        name="description"
-                                        placeholder="Descrierea atracției"
-                                        value={values.description}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        isInvalid={touched.description && !!errors.description}
-                                        className="form-input"
-                                    />
-                                    <Form.Control.Feedback type="invalid" className="error-text">
-                                        {errors.description}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label">Locație</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="location"
-                                        placeholder="Locația atracției"
-                                        value={values.location}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        isInvalid={touched.location && !!errors.location}
-                                        className="form-input"
-                                    />
-                                    <Form.Control.Feedback type="invalid" className="error-text">
-                                        {errors.location}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="form-label">Fisier Audio</Form.Label>
-                                    <Form.Control
-                                        type="file"
-                                        name="audioFile"
-                                        accept=".mp3,audio/mpeg,audio/wav,audio/x-wav"
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            const file = event.currentTarget.files?.[0];
-                                            setFieldValue('audioFile', file);
-                                        }}
-                                        className="form-input"
-                                        isInvalid={touched.audioFile && !!errors.audioFile}
-                                    />
-                                    <Form.Control.Feedback type="invalid" className="error-text">
-                                        {errors.audioFile}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Button
-                                    type="submit"
-                                    className="btn-orange btn-glow w-100"
-                                >
-                                    Creează Atracție
-                                </Button>
-                            </Form>
-                        )}
-                    </Formik>
-
-                    <p className="new-attraction-footer">
-                        Vrei să editezi o atracție existăntă? <a href="/attractions" className="new-attraction-link">Vezi toate</a>
-                    </p>
-                </div>
             </div>
         </div>
     );

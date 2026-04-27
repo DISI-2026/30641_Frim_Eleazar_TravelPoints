@@ -232,15 +232,15 @@
       "uuid": "9f2e3a49-5e00-40c6-acc2-05c39ba859a7",
       "type": "http",
       "documentation": "",
-      "method": "post",
-      "endpoint": "attraction/create",
+      "method": "get",
+      "endpoint": "api/attractions",
       "responses": [
         {
           "uuid": "6f8431df-3314-4299-8a5c-ff79fa87420e",
-          "body": "{\"success\": true}",
+          "body": "{\"success\": true,\n  \"data\" : [{\n    \"id\": 3,\n    \"name\": \"turnul din pisa\",\n    \"description\": \"descrierea locatiei\",\n    \"location\": \"italia\"\n  }]\n}",
           "latency": 0,
           "statusCode": 200,
-          "label": "",
+          "label": "Atractii sunt returnate la utilizator",
           "headers": [
             {
               "key": "Access-Control-Allow-Origin",
@@ -253,6 +253,58 @@
             {
               "key": "Content-Type",
               "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "3949ab82-7963-44dc-8d66-4a277a1e42cb",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/attractions/create",
+      "responses": [
+        {
+          "uuid": "eca58a2e-1e78-4b14-9b9f-cda993e6a5a3",
+          "body": "{\"success\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Atractie creata",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
             }
           ],
           "bodyType": "INLINE",
@@ -288,6 +340,10 @@
     {
       "type": "route",
       "uuid": "9f2e3a49-5e00-40c6-acc2-05c39ba859a7"
+    },
+    {
+      "type": "route",
+      "uuid": "3949ab82-7963-44dc-8d66-4a277a1e42cb"
     }
   ],
   "folders": [],
