@@ -6,7 +6,7 @@ import './NewAttraction.css';
 import { createAttraction, type AttractionType } from "../API/attraction_api";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav', 'audio/x-wav'];
+const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav', 'audio/x-wav', "audio/vnd.wave"];
 
 const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -24,6 +24,7 @@ const validationSchema = Yup.object().shape({
             return false;
         })
         .test('fileType', 'Fișierul trebuie sa fie audio', (value) => {
+            console.log(value)
             if (value instanceof File) {
                 return SUPPORTED_FORMATS.includes(value.type);
             }
