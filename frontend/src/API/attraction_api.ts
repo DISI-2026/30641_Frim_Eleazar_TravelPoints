@@ -9,6 +9,13 @@ export type AttractionType =
         audioFile: File | null;
     }
 
+export type ReviewType =
+    {
+        id?: number,
+        author: string;
+        text: string;
+    }
+
 type AttractionCreationResponseType = ResponseType<{ id: number }>
 type AttractionListResponseType = ResponseType<AttractionType[]>
 
@@ -48,6 +55,26 @@ export async function updateAttraction(attraction: AttractionType): Promise<Resp
         return returnResponseWithDefaultError(response.data, "Problema la actualizarea atractiei")
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Problema la actualizarea atractiei";
+        return { success: false, error: errorMessage };
+    }
+}
+
+export async function getReviews(attraction: AttractionType): Promise<ResponseType<ReviewType[]>> {
+    try {
+        const response = await attractionAPI.get<ResponseType<ReviewType[]>>(`${attraction.id}/reviews`);
+        return returnResponseWithDefaultError(response.data, "Problema la preluarea recenziilor")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la preluarea recenziilor";
+        return { success: false, error: errorMessage };
+    }
+}
+
+export async function addReview(attraction: AttractionType, text: string): Promise<ResponseType> {
+    try {
+        const response = await attractionAPI.post<ResponseType>(`${attraction.id}/reviews`, { text: text });
+        return returnResponseWithDefaultError(response.data, "Problema la adaugarea recenziei")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la adaugarea recenziei";
         return { success: false, error: errorMessage };
     }
 }

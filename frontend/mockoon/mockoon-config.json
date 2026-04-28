@@ -543,6 +543,54 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "8f2ee4a6-509e-4717-be8e-fdc125137cac",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/attractions/:id/reviews",
+      "responses": [
+        {
+          "uuid": "9c1b1614-231f-4d6f-9deb-860b1f9da8fd",
+          "body": "{\"success\": true}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Accept a review",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -576,6 +624,10 @@
     {
       "type": "route",
       "uuid": "a5a0cafd-016a-4536-a045-d0a5935cbfd6"
+    },
+    {
+      "type": "route",
+      "uuid": "8f2ee4a6-509e-4717-be8e-fdc125137cac"
     }
   ],
   "folders": [],

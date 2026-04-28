@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AttractionForm } from "./NewAttraction";
 import './AttractionsPage.css'
 import { addWishlist, getWishlists, removeWishlist } from "../API/wishlist_api";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaExternalLinkAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useLogin } from "../context/AuthContext";
 
 const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () => void; onConfirm: () => void }) => (
@@ -183,7 +183,11 @@ export default function AttractionsPage() {
                     <ListGroup.Item key={index}>
                         <Card>
                             <Card.Body>
-                                <Card.Title>{attraction.name}</Card.Title>
+                                <Card.Title>{attraction.name}
+                                    <Button href={`/attraction/${attraction.id}`} variant="outline">
+                                        <FaExternalLinkAlt />
+                                    </Button>
+                                </Card.Title>
                                 <Card.Text>{attraction.description}</Card.Text>
                                 <Card.Text>{attraction.location}</Card.Text>
                                 {attraction.audioFile && <audio controls src={URL.createObjectURL(attraction.audioFile)} />}
@@ -212,6 +216,6 @@ export default function AttractionsPage() {
                     </ListGroup.Item>
                 ))}
             </ListGroup>
-        </Container>
+        </Container >
     );
 }
