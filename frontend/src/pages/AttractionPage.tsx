@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { addReview, getAttractions, type ReviewType } from '../API/attraction_api';
+import { addReview, getAttractions, getReviews } from '../API/attraction_api';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Container, Form, ListGroup, Modal } from 'react-bootstrap';
 import { useState } from 'react';
@@ -21,16 +21,31 @@ const AttractionPage = () => {
         })
     });
 
-    const reviews: ReviewType[] = [{
-        id: 1,
-        author: "John Doe",
-        text: "Great place to visit!"
-    }]
+    const {data: reviews} = useQuery({
+        queryKey: ["reviews", id],
+        refetchInterval: 1000,
+        queryFn: () => getReviews(attraction!).then((res) => {
+            if (res.success === false) {
+                throw new Error(res.error)
+            }
+            return res.data
+        }),
+        enabled: attraction !== undefined
+    })
 
     if (attraction === undefined) {
         return (
             <>
                 <h2>Atractia nu a fost gasita</h2>
+                <Button href="/">Inapoi la pagina principala</Button>
+            </>
+        )
+    }
+
+    if(reviews === undefined) {
+        return (
+            <>
+                <h2>Recenziile nu au fost gasite</h2>
                 <Button href="/">Inapoi la pagina principala</Button>
             </>
         )
@@ -97,17 +112,22 @@ const AttractionPage = () => {
                 </>
             }
 
-            {reviews.length > 0 &&
-                reviews.map((review, index) =>
-                    <ListGroup.Item key={index}>
-                        <Card>
-                            <Card.Body>
-                                <Card.Title>{review.author}</Card.Title>
-                                <Card.Text>{review.text}</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </ListGroup.Item>
-                )}
+            {reviews.length > 0 ?
+                (
+                    reviews.map((review, index) =>
+                        <ListGroup.Item key={index}>
+                            <Card>
+                                <Card.Body>
+                                    <Card.Title>{review.author}</Card.Title>
+                                    <Card.Text>{review.text}</Card.Text>
+                                </Card.Body>
+                            </Card>
+                        </ListGroup.Item>
+                    )
+                )
+                :
+                <h3>Nu exista recenzii pentru aceasta atractie</h3>
+            }
         </Container >
     )
 };

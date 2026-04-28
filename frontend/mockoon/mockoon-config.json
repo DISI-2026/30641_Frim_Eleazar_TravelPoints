@@ -591,6 +591,54 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "80eb0322-9474-4a9e-be19-720b87062677",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/attractions/:id/reviews",
+      "responses": [
+        {
+          "uuid": "4cff2d63-b786-416b-9a9d-2587ab293b6a",
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"author\": \"Mucea\",\n      \"text\": \"ce naiba...\"\n    },\n    {\n      \"id\": 2,\n      \"author\": \"bambucea\",\n      \"text\": \"foarte aiurea!!\"\n    },\n    {\n      \"id\": 3,\n      \"author\": \"irinel si andrei\",\n      \"text\": \"foarte aiurea!!\"\n    },\n    {\n      \"id\": 4,\n      \"author\": \"mihnea\",\n      \"text\": \"prostie\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return reviews",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -628,6 +676,10 @@
     {
       "type": "route",
       "uuid": "8f2ee4a6-509e-4717-be8e-fdc125137cac"
+    },
+    {
+      "type": "route",
+      "uuid": "80eb0322-9474-4a9e-be19-720b87062677"
     }
   ],
   "folders": [],
