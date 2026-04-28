@@ -4,6 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
 import { AttractionForm } from "./NewAttraction";
 import './AttractionsPage.css'
+import { addWishlist, getWishlists, removeWishlist } from "../API/wishlist_api";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useLogin } from "../context/AuthContext";
 
 const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () => void; onConfirm: () => void }) => (
     <Modal show={show} onHide={onHide} centered>
@@ -31,6 +34,7 @@ type AttractionFilter = {
 }
 
 export default function AttractionsPage() {
+    const { isLoggedIn } = useLogin()
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attractionToEdit, setAttractionToEdit] = useState<AttractionType | null>(null);
     const [attractionFilter, setAttractionFilter] = useState<AttractionFilter>({ location: undefined, name: "" });
@@ -45,6 +49,17 @@ export default function AttractionsPage() {
         })
     });
 
+    const { data: wishlists, error: wishlistError, isError: isWishlistError, isLoading: isWishlistLoading } = useQuery({
+        queryKey: ["wishlists"],
+        refetchInterval: 5000,
+        queryFn: () => getWishlists().then((res) => {
+            if (res.success === false) {
+                throw new Error(res.error)
+            }
+            return res.data
+        })
+    })
+
     if (attractions === undefined) {
         return (
             <h2>Nu am gasit atractii</h2>
@@ -57,7 +72,7 @@ export default function AttractionsPage() {
         )
     }
 
-    if (isLoading) {
+    if (isLoading || isWishlistLoading) {
         return (
             <Spinner />
         )
@@ -81,7 +96,7 @@ export default function AttractionsPage() {
     }
 
     const onSubmitHandler = async (values: AttractionType) => {
-        if(!attractionToEdit) {
+        if (!attractionToEdit) {
             console.error("No attraction selected for update");
             return;
         }
@@ -96,20 +111,43 @@ export default function AttractionsPage() {
         });
     }
 
+    const toggleWishlist = async (attractionId: number) => {
+        if (wishlists === undefined) {
+            return
+        }
+
+        if (wishlists.some((wl) => wl.id === attractionId)) {
+            await removeWishlist(attractionId).then((res) => {
+                if (!res.success) {
+                    alert(res.error)
+                }
+            })
+            return
+        }
+
+        await addWishlist(attractionId).then((res) => {
+            if (!res.success) {
+                alert(res.error)
+            }
+        })
+    }
+
     return (
         <Container>
-            <DeleteModal show={confirmDelete} onHide={() => setConfirmDelete(false)} onConfirm={handleConfirmDelete} />
-            {attractionToEdit &&
+            <DeleteModal show={confirmDelete} onHide={() => { setAttractionToEdit(null); setConfirmDelete(false) }} onConfirm={handleConfirmDelete} />
+            {attractionToEdit && !confirmDelete &&
                 <Modal contentClassName="clear-modal-body" show onHide={() => setAttractionToEdit(null)}><AttractionForm isEditing initialValues={attractionToEdit} onSubmitFunc={onSubmitHandler} /></Modal>
             }
 
             <h1>Atracții</h1>
             <Button className="btn-orange btn-slim" href="/newattraction">Creeza o noua atractie</Button>
-            
+
+            {isWishlistError && <h2>{wishlistError instanceof Error ? wishlistError.message : "Eroare la incarcarea wishlists"}</h2>}
+
             <Form>
                 <Form.Group className="mb-3" controlId="attractionName">
                     <Form.Label>Caută după nume</Form.Label>
-                    <Form.Control type="text" placeholder="Numele atractiei" 
+                    <Form.Control type="text" placeholder="Numele atractiei"
                         defaultValue={attractionFilter.name}
                         onChange={(e) => {
                             setAttractionFilter({ ...attractionFilter, name: e.target.value })
@@ -149,8 +187,26 @@ export default function AttractionsPage() {
                                 <Card.Text>{attraction.description}</Card.Text>
                                 <Card.Text>{attraction.location}</Card.Text>
                                 {attraction.audioFile && <audio controls src={URL.createObjectURL(attraction.audioFile)} />}
-                                <Button onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
-                                <Button variant="danger" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
+
+                                <Button variant="text" className="btn-orange mx-3 py-2 rounded-pill" onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
+                                <Button variant="danger" className="btn-slim" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
+
+                                {(wishlists === undefined || isLoggedIn == false) ?
+                                    <Button href="/login" variant="text" className="btn-glow btn-slim p-2 rounded-5 py-1 m-2">
+                                        <FaRegHeart />
+                                    </Button>
+                                    :
+                                    (
+                                        <Button
+                                            onClick={() => toggleWishlist(attraction.id!)}
+                                            variant="text" className="btn-glow btn-slim p-2 rounded-5 py-1 m-2">
+                                            {wishlists.some((wl) => wl.id === attraction.id) ? (
+                                                <FaHeart />
+                                            ) : (
+                                                <FaRegHeart />
+                                            )}
+                                        </Button>
+                                    )}
                             </Card.Body>
                         </Card>
                     </ListGroup.Item>

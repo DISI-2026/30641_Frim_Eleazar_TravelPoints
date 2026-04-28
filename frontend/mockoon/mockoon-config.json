@@ -267,7 +267,7 @@
           "rulesOperator": "OR",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false,
+          "default": true,
           "crudKey": "id",
           "callbacks": []
         },
@@ -299,7 +299,7 @@
           "rulesOperator": "OR",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": true,
+          "default": false,
           "crudKey": "id",
           "callbacks": []
         }
@@ -355,6 +355,194 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "a2f73292-bb40-453c-a75e-f4b0c92096a5",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/wishlist",
+      "responses": [
+        {
+          "uuid": "591c6833-4e08-44c0-b23b-8ff5bb76d5c0",
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 3\n    },\n    {\n      \"id\": 14\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Lista cu wishlisted attractions",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "b9ca401c-8553-4d10-8e2c-7708a964ee57",
+      "type": "http",
+      "documentation": "",
+      "method": "delete",
+      "endpoint": "api/wishlist/:id",
+      "responses": [
+        {
+          "uuid": "12474eb6-5a33-45d1-b321-cdb17273bbcd",
+          "body": "{\n  \"success\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Remove wishlist",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "a5a0cafd-016a-4536-a045-d0a5935cbfd6",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/wishlist/:id",
+      "responses": [
+        {
+          "uuid": "e1c0f0f9-abb8-4df4-90e5-49f26cb83d15",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Deja exista acest wishlist!\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Add wishlist - error",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "1",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "e06df9c2-7aa1-48cb-97b1-a983620deb42",
+          "body": "{\n  \"success\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Add wishlist",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -376,6 +564,18 @@
     {
       "type": "route",
       "uuid": "3949ab82-7963-44dc-8d66-4a277a1e42cb"
+    },
+    {
+      "type": "route",
+      "uuid": "a2f73292-bb40-453c-a75e-f4b0c92096a5"
+    },
+    {
+      "type": "route",
+      "uuid": "b9ca401c-8553-4d10-8e2c-7708a964ee57"
+    },
+    {
+      "type": "route",
+      "uuid": "a5a0cafd-016a-4536-a045-d0a5935cbfd6"
     }
   ],
   "folders": [],
