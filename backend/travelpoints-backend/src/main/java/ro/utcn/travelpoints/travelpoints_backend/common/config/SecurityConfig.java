@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/search").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 )
