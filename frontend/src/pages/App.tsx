@@ -9,6 +9,9 @@ import NotFound from './NotFound'
 import { Register } from './Register'
 import { Landing } from './Landing'
 import LogIn from './LogIn'
+import NewAttraction from './NewAttraction'
+import AttractionsPage from './AttractionsPage'
+import AttractionPage from './AttractionPage'
 
 const queryClient = new QueryClient()
 
@@ -22,6 +25,9 @@ export default function App() {
               <Route index element={<Landing />} />
               <Route path='register' element={<Register />} />
               <Route path='login' element={<LogIn />} />
+              <Route path='attractions' element={<AttractionsPage />} />
+              <Route path='attraction/:id' element={<AttractionPage />} />
+              <Route path='newattraction' element={<NewAttraction />} />
               <Route path='noaccess' element={<p> Acces restrictionat </p>} />
               <Route path='profile' element={<p> Profil </p>} />
             </Route>
