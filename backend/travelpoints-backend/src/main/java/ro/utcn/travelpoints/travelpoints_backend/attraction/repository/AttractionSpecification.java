@@ -12,29 +12,36 @@ public class AttractionSpecification {
     public static Specification<Attraction> filterBy(String keyword, String location, String category) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+            String normalizedKeyword = keyword == null ? null : keyword.trim().toLowerCase();
+            String normalizedLocation = location == null ? null : location.trim().toLowerCase();
+            String normalizedCategory = category == null ? null : category.trim().toLowerCase();
 
             // Cautare dupa keyword in nume sau in textul descrierii
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                String likePattern = "%" + keyword.toLowerCase() + "%";
+            if (normalizedKeyword != null && !normalizedKeyword.isEmpty()) {
+                String likePattern = "%" + normalizedKeyword + "%";
                 Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), likePattern);
                 Predicate descPredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("descriptionText")), likePattern);
                 predicates.add(criteriaBuilder.or(namePredicate, descPredicate));
             }
 
             // Filtrare dupa numele locatiei
-            if (location != null && !location.trim().isEmpty()) {
+            if (normalizedLocation != null && !normalizedLocation.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("location").get("name")),
-                        location.toLowerCase()
+                        normalizedLocation
                 ));
             }
 
             // Filtrare dupa numele categoriei
-            if (category != null && !category.trim().isEmpty()) {
+            if (normalizedCategory != null && !normalizedCategory.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("category").get("name")),
-                        category.toLowerCase()
+                        normalizedCategory
                 ));
+            }
+
+            if (predicates.isEmpty()) {
+                return criteriaBuilder.disjunction();
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
