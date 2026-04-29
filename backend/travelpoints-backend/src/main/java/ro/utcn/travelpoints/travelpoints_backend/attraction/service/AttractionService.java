@@ -16,6 +16,7 @@ import ro.utcn.travelpoints.travelpoints_backend.attraction.repository.LocationR
 import ro.utcn.travelpoints.travelpoints_backend.common.exception.ResourceNotFoundException;
 import ro.utcn.travelpoints.travelpoints_backend.user.entity.User;
 import ro.utcn.travelpoints.travelpoints_backend.user.repository.UserRepository;
+import ro.utcn.travelpoints.travelpoints_backend.attraction.dto.UpdateAttractionRequest;
 import org.springframework.data.jpa.domain.Specification;
 import ro.utcn.travelpoints.travelpoints_backend.attraction.repository.AttractionSpecification;
 import java.util.List;
@@ -79,6 +80,66 @@ public class AttractionService {
 
         return AttractionMapper.toResponse(saved);
     }
+    @Transactional
+    public AttractionResponse updateAttraction(UUID id, UpdateAttractionRequest request) {
+        Attraction attraction = attractionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Attraction not found with id: " + id));
+
+        // null ii "nu modifica"
+        if (request.name() != null) {
+            attraction.setName(request.name());
+        }
+
+        if (request.descriptionText() != null) {
+            attraction.setDescriptionText(request.descriptionText());
+        }
+
+        if (request.entryPrice() != null) {
+            attraction.setEntryPrice(request.entryPrice());
+        }
+
+        if (request.locationId() != null) {
+            Location location = locationRepository.findById(request.locationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Location not found with id: " + request.locationId()));
+            attraction.setLocation(location);
+        }
+
+        if (request.categoryId() != null) {
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category not found with id: " + request.categoryId()));
+            attraction.setCategory(category);
+        }
+
+        Attraction saved = attractionRepository.save(attraction);
+        log.info("Updated attraction '{}' with id {}", saved.getName(), saved.getId());
+
+        return AttractionMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public void deleteAttraction(UUID id) {
+        Attraction attraction = attractionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Attraction not found with id: " + id));
+
+        String audioPath = attraction.getDescriptionAudioUrl();
+
+        attractionRepository.delete(attraction);
+        log.info("Deleted attraction '{}' with id {}", attraction.getName(), id);
+
+        
+       
+        if (audioPath != null) {
+            try {
+                fileStorageService.deleteAudio(audioPath);
+            } catch (Exception e) {
+                log.warn("Failed to delete audio file '{}' for attraction {}: {}",
+                        audioPath, id, e.getMessage());
+            }
+        }
     @Transactional(readOnly = true)
     public List<AttractionResponse> searchAttractions(String keyword, String location, String category) {
         Specification<Attraction> spec = AttractionSpecification.filterBy(keyword, location, category);
