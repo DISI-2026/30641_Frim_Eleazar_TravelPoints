@@ -17,6 +17,11 @@ import ro.utcn.travelpoints.travelpoints_backend.common.exception.ResourceNotFou
 import ro.utcn.travelpoints.travelpoints_backend.user.entity.User;
 import ro.utcn.travelpoints.travelpoints_backend.user.repository.UserRepository;
 import ro.utcn.travelpoints.travelpoints_backend.attraction.dto.UpdateAttractionRequest;
+import org.springframework.data.jpa.domain.Specification;
+import ro.utcn.travelpoints.travelpoints_backend.attraction.repository.AttractionSpecification;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -135,5 +140,13 @@ public class AttractionService {
                         audioPath, id, e.getMessage());
             }
         }
+    @Transactional(readOnly = true)
+    public List<AttractionResponse> searchAttractions(String keyword, String location, String category) {
+        Specification<Attraction> spec = AttractionSpecification.filterBy(keyword, location, category);
+        List<Attraction> attractions = attractionRepository.findAll(spec);
+
+        return attractions.stream()
+                .map(AttractionMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }
