@@ -32,15 +32,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                //  Legam configurarea CORS de mai jos la SecurityFilterChain
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/search").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/*").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/attractions/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/attractions/**").hasRole("ADMIN")
+                        .requestMatchers("/wishlist/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -52,18 +55,17 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //  Definim bean-ul sursă pentru regulile CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Aici pui portul pe care rulează frontend-ul tău (ex: localhost:5173 pt Vite/React)
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization", "authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Se aplică pentru tot API-ul
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
