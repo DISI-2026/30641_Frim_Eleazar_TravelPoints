@@ -16,7 +16,6 @@ public class AttractionSpecification {
             String normalizedLocation = location == null ? null : location.trim().toLowerCase();
             String normalizedCategory = category == null ? null : category.trim().toLowerCase();
 
-            // Cautare dupa keyword in nume sau in textul descrierii
             if (normalizedKeyword != null && !normalizedKeyword.isEmpty()) {
                 String likePattern = "%" + normalizedKeyword + "%";
                 Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), likePattern);
@@ -24,7 +23,6 @@ public class AttractionSpecification {
                 predicates.add(criteriaBuilder.or(namePredicate, descPredicate));
             }
 
-            // Filtrare dupa numele locatiei
             if (normalizedLocation != null && !normalizedLocation.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("location").get("name")),
@@ -32,7 +30,6 @@ public class AttractionSpecification {
                 ));
             }
 
-            // Filtrare dupa numele categoriei
             if (normalizedCategory != null && !normalizedCategory.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("category").get("name")),
@@ -40,8 +37,9 @@ public class AttractionSpecification {
                 ));
             }
 
+            // Dacă nu s-a dat niciun filtru, întoarce toate înregistrările
             if (predicates.isEmpty()) {
-                return criteriaBuilder.disjunction();
+                return criteriaBuilder.conjunction();  // <-- AICI: era disjunction()
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
