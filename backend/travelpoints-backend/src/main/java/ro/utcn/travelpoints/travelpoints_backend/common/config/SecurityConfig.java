@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/search").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/*").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions").hasRole("ADMIN")
+                        .requestMatchers("/wishlist/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
