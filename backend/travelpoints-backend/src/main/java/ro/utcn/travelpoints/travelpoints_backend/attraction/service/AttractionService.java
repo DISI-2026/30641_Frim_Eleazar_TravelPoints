@@ -37,7 +37,7 @@ public class AttractionService {
     private final FileStorageService fileStorageService;
 
     @Transactional
-    public AttractionResponse createAttraction(
+    public UUID createAttraction(
             String name,
             String descriptionText,
             BigDecimal entryPrice,
@@ -46,13 +46,21 @@ public class AttractionService {
             MultipartFile audioFile,
             String creatorEmail
     ) {
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Location not found with id: " + locationId));
+        // Conditionally fetch Location
+        Location location = null;
+        if (locationId != null) {
+            location = locationRepository.findById(locationId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Location not found with id: " + locationId));
+        }
 
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Category not found with id: " + categoryId));
+        // Conditionally fetch Category
+        Category category = null;
+        if (categoryId != null) {
+            category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category not found with id: " + categoryId));
+        }
 
         User creator = userRepository.findByEmail(creatorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -75,11 +83,12 @@ public class AttractionService {
                 .build();
 
         Attraction saved = attractionRepository.save(attraction);
-        log.info("Created attraction '{}' with id {} by user {}", 
+        log.info("Created attraction '{}' with id {} by user {}",
                 saved.getName(), saved.getId(), creatorEmail);
 
-        return AttractionMapper.toResponse(saved);
+        return saved.getId();
     }
+
     @Transactional
     public AttractionResponse updateAttraction(UUID id, UpdateAttractionRequest request) {
         Attraction attraction = attractionRepository.findById(id)
@@ -140,6 +149,8 @@ public class AttractionService {
                         audioPath, id, e.getMessage());
             }
         }
+
+    }
     @Transactional(readOnly = true)
     public List<AttractionResponse> searchAttractions(String keyword, String location, String category) {
         Specification<Attraction> spec = AttractionSpecification.filterBy(keyword, location, category);
@@ -148,5 +159,21 @@ public class AttractionService {
         return attractions.stream()
                 .map(AttractionMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AttractionResponse> getAllAttractions() {
+        List<Attraction> attractions = attractionRepository.findAll();
+        return attractions.stream()
+                .map(AttractionMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AttractionResponse getAttractionById(UUID id) {
+        Attraction attraction = attractionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Attraction not found with id: " + id));
+        return AttractionMapper.toResponse(attraction);
     }
 }

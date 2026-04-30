@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ro.utcn.travelpoints.travelpoints_backend.attraction.dto.AttractionResponse;
 import ro.utcn.travelpoints.travelpoints_backend.attraction.service.AttractionService;
+import ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.HashMap;
 import java.util.List;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -29,24 +33,29 @@ public class AttractionController {
 
     private final AttractionService attractionService;
 
-    @PostMapping
-    public ResponseEntity<AttractionResponse> createAttraction(
+    @PostMapping("/create")
+    public ResponseEntity<Map<String, Object>> createAttraction(
             @RequestParam("name") String name,
             @RequestParam(value = "descriptionText", required = false) String descriptionText,
             @RequestParam(value = "entryPrice", required = false) BigDecimal entryPrice,
-            @RequestParam("locationId") UUID locationId,
-            @RequestParam("categoryId") UUID categoryId,
+            @RequestParam(value = "locationId",required = false) UUID locationId,
+            @RequestParam(value = "categoryId",required = false) UUID categoryId,
             @RequestParam(value = "audioFile", required = false) MultipartFile audioFile,
             Authentication authentication
     ) {
         String creatorEmail = authentication.getName(); // email-ul din JWT
 
-        AttractionResponse response = attractionService.createAttraction(
+        UUID response_id = attractionService.createAttraction(
                 name, descriptionText, entryPrice,
                 locationId, categoryId, audioFile, creatorEmail
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("success", true);
+        responseBody.put("id", response_id); // Preluam ID-ul generat
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+
     }
     @PutMapping("/{id}")
     public ResponseEntity<AttractionResponse> updateAttraction(
@@ -63,14 +72,33 @@ public class AttractionController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("")
+    public ResponseEntity<ApiResponse<List<AttractionResponse>>> getAllAttractions() {
+        List<AttractionResponse> attractions = attractionService.getAllAttractions();
+        ApiResponse<List<AttractionResponse>> apiResponse = ApiResponse.<List<AttractionResponse>>builder()
+                .success(true)
+                .data(attractions)
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @GetMapping("/search")
-    public ResponseEntity<List<AttractionResponse>> searchAttractions(
+    public ResponseEntity<ApiResponse<List<AttractionResponse>>> searchAttractions(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "location", required = false) String location,
             @RequestParam(value = "category", required = false) String category
     ) {
         List<AttractionResponse> results = attractionService.searchAttractions(keyword, location, category);
-        return ResponseEntity.ok(results); // return 200 OK cu lista (sau array gol)
+        ApiResponse<List<AttractionResponse>> apiResponse = ApiResponse.<List<AttractionResponse>>builder()
+                .success(true)
+                .data(results)
+                .build();
+        return ResponseEntity.ok(apiResponse); // return 200 OK cu lista (sau array gol)
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<AttractionResponse> getAttractionById(@PathVariable UUID id) {
+        AttractionResponse response = attractionService.getAttractionById(id);
+        return ResponseEntity.ok(response);
     }
 
 }
