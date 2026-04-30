@@ -36,50 +36,74 @@ public class AttractionService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
-    @Transactional
-    public AttractionResponse createAttraction(
-            String name,
-            String descriptionText,
-            BigDecimal entryPrice,
-            UUID locationId,
-            UUID categoryId,
-            MultipartFile audioFile,
-            String creatorEmail
-    ) {
-        Location location = locationRepository.findById(locationId)
+   @Transactional
+public AttractionResponse createAttraction(
+        String name,
+        String descriptionText,
+        BigDecimal entryPrice,
+        UUID locationId,
+        UUID categoryId,
+        String locationName,
+        MultipartFile audioFile,
+        String creatorEmail
+) {
+    // Rezolvăm locația: ori prin UUID, ori prin nume (creăm dacă nu există)
+    Location location;
+    if (locationId != null) {
+        location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Location not found with id: " + locationId));
+    } else if (locationName != null && !locationName.isBlank()) {
+        location = locationRepository.findAll().stream()
+                .filter(l -> l.getName().equalsIgnoreCase(locationName.trim()))
+                .findFirst()
+                .orElseGet(() -> locationRepository.save(Location.builder()
+                        .name(locationName.trim())
+                        .latitude(java.math.BigDecimal.ZERO)
+                        .longitude(java.math.BigDecimal.ZERO)
+                        .build()));
+    } else {
+        throw new ResourceNotFoundException("Location must be provided (locationId or location name)");
+    }
 
-        Category category = categoryRepository.findById(categoryId)
+    // Categoria — opțională momentan, dăm default dacă nu vine
+    Category category;
+    if (categoryId != null) {
+        category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Category not found with id: " + categoryId));
-
-        User creator = userRepository.findByEmail(creatorEmail)
+    } else {
+        category = categoryRepository.findByName("Monument")
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Creator user not found: " + creatorEmail));
-
-        // salvam audioul daca exista
-        String audioPath = null;
-        if (audioFile != null && !audioFile.isEmpty()) {
-            audioPath = fileStorageService.storeAudio(audioFile);
-        }
-
-        Attraction attraction = Attraction.builder()
-                .name(name)
-                .descriptionText(descriptionText)
-                .descriptionAudioUrl(audioPath)
-                .entryPrice(entryPrice)
-                .location(location)
-                .category(category)
-                .createdBy(creator)
-                .build();
-
-        Attraction saved = attractionRepository.save(attraction);
-        log.info("Created attraction '{}' with id {} by user {}", 
-                saved.getName(), saved.getId(), creatorEmail);
-
-        return AttractionMapper.toResponse(saved);
+                        "Default category 'Monument' not found"));
     }
+
+    User creator = userRepository.findByEmail(creatorEmail)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                    "Creator user not found: " + creatorEmail));
+
+    String audioPath = null;
+    if (audioFile != null && !audioFile.isEmpty()) {
+        audioPath = fileStorageService.storeAudio(audioFile);
+    }
+
+    Attraction attraction = Attraction.builder()
+            .name(name)
+            .descriptionText(descriptionText)
+            .descriptionAudioUrl(audioPath)
+            .entryPrice(entryPrice)
+            .location(location)
+            .category(category)
+            .createdBy(creator)
+            .build();
+
+    Attraction saved = attractionRepository.save(attraction);
+    log.info("Created attraction '{}' with id {} by user {}",
+            saved.getName(), saved.getId(), creatorEmail);
+
+    return AttractionMapper.toResponse(saved);
+}
+
     @Transactional
     public AttractionResponse updateAttraction(UUID id, UpdateAttractionRequest request) {
         Attraction attraction = attractionRepository.findById(id)
@@ -140,6 +164,8 @@ public class AttractionService {
                         audioPath, id, e.getMessage());
             }
         }
+
+    }
     @Transactional(readOnly = true)
     public List<AttractionResponse> searchAttractions(String keyword, String location, String category) {
         Specification<Attraction> spec = AttractionSpecification.filterBy(keyword, location, category);
@@ -148,5 +174,21 @@ public class AttractionService {
         return attractions.stream()
                 .map(AttractionMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AttractionResponse> getAllAttractions() {
+        List<Attraction> attractions = attractionRepository.findAll();
+        return attractions.stream()
+                .map(AttractionMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AttractionResponse getAttractionById(UUID id) {
+        Attraction attraction = attractionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Attraction not found with id: " + id));
+        return AttractionMapper.toResponse(attraction);
     }
 }

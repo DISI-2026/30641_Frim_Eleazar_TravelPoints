@@ -16,6 +16,7 @@ import ro.utcn.travelpoints.travelpoints_backend.auth.dto.RegisterRequest;
 import ro.utcn.travelpoints.travelpoints_backend.auth.dto.RegisterResponse;
 import ro.utcn.travelpoints.travelpoints_backend.auth.service.AuthService;
 
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class AuthController {
             return ResponseEntity
                     .ok()
                     .header("Authorization", "Bearer " + token)
+                    .header("Access-Control-Expose-Headers", "authorization, Authorization")
                     .body(LoginResponse.ok());
 
         } catch (BadCredentialsException | UsernameNotFoundException ex) {

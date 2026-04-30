@@ -9,9 +9,9 @@ public record AttractionResponse(
         String descriptionText,
         String descriptionAudioUrl,
         BigDecimal entryPrice,
-        UUID locationId,
+        //UUID locationId,
         String locationName,
-        UUID categoryId,
+      //  UUID categoryId,
         String categoryName,
         UUID createdBy
 ) {
