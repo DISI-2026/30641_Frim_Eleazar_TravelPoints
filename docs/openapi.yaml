@@ -1,0 +1,593 @@
+openapi: 3.0.3
+info:
+  title: TravelPoints API
+  description: API specifications for the TravelPoints application, covering Authentication, Attractions, Reviews, Wishlist, and Analytics.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local Spring Boot Development Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN]
+    Attraction:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        offers:
+          type: string
+        audioUrl:
+          type: string
+        imageUrls:
+          type: array
+          items:
+            type: string
+        views:
+          type: integer
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        date:
+          type: string
+          format: date-time
+        userId:
+          type: string
+        username:
+          type: string
+        attractionId:
+          type: string
+    HourlyStat:
+      type: object
+      properties:
+        hour:
+          type: string
+        visits:
+          type: integer
+      example:
+        hour: "10:00"
+        visits: 45
+    MonthlyStat:
+      type: object
+      properties:
+        month:
+          type: string
+        visits:
+          type: integer
+      example:
+        month: "Mai"
+        visits: 1200
+    TopAttractionStat:
+      type: object
+      properties:
+        attractionId:
+          type: string
+        name:
+          type: string
+        views:
+          type: integer
+
+# ENDPOINTS
+paths:
+  /api/auth/login:
+    post:
+      summary: User login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized (Invalid credentials)
+
+  /api/auth/register:
+    post:
+      summary: User registration
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request (e.g., email already exists)
+
+  /api/auth/forgot-password:
+    post:
+      summary: Forgot password (generate token)
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Reset link sent to email
+
+  /api/auth/reset-password:
+    post:
+      summary: Reset password
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password successfully updated
+
+  /api/attractions:
+    post:
+      summary: Add a new attraction
+      tags: [Attractions]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                offers:
+                  type: string
+                audioFile:
+                  type: string
+                  format: binary
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Attraction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attraction'
+
+  /api/attractions/{id}:
+    get:
+      summary: Get attraction details
+      tags: [Attractions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Attraction found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attraction'
+        '404':
+          description: Not found
+
+    put:
+      summary: Update attraction
+      tags: [Attractions]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                offers:
+                  type: string
+                audioFile:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Updated successfully
+
+    delete:
+      summary: Delete attraction
+      tags: [Attractions]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted successfully
+
+  /api/attractions/search:
+    get:
+      summary: Search and filter attractions
+      tags: [Attractions]
+      parameters:
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of attractions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attraction'
+              example:
+                - id: "1"
+                  name: "Castelul Bran"
+                  location: "Bran"
+                  category: "Castel"
+                  description: "Un castel istoric celebru."
+                  price: 50
+                  views: 1200
+                - id: "2"
+                  name: "Castelul Corvinilor"
+                  location: "Hunedoara"
+                  category: "Castel"
+                  description: "Unul din cele mai mari castele din Europa."
+                  price: 40
+                  views: 950
+
+  /api/wishlist:
+    get:
+      summary: Get user wishlist
+      tags: [Wishlist]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of saved attractions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attraction'
+              example:
+                - id: "1"
+                  name: "Muzeul de Artă"
+                  location: "București"
+                  category: "Muzeu"
+                  description: "Galerie națională de artă."
+                  price: 30
+                  views: 500
+                - id: "2"
+                  name: "Parcul Herăstrău"
+                  location: "București"
+                  category: "Parc"
+                  description: "Cel mai mare parc din oraș."
+                  price: 0
+                  views: 3000
+
+  /api/wishlist/{attractionId}:
+    post:
+      summary: Add to wishlist
+      tags: [Wishlist]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attractionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Added
+
+    delete:
+      summary: Remove from wishlist
+      tags: [Wishlist]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attractionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Removed
+
+  /api/attractions/{id}/reviews:
+    get:
+      summary: Get reviews for attraction
+      tags: [Reviews]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+              example:
+                - id: "101"
+                  text: "Locatie excelenta, recomand!"
+                  date: "2023-10-01T14:30:00Z"
+                  userId: "u1"
+                  username: "Ion Popescu"
+                  attractionId: "1"
+                - id: "102"
+                  text: "Foarte aglomerat in weekend."
+                  date: "2023-10-02T09:15:00Z"
+                  userId: "u2"
+                  username: "Ana Maria"
+                  attractionId: "1"
+
+    post:
+      summary: Add a review
+      tags: [Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '201':
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+
+  /api/contact:
+    post:
+      summary: Send contact email
+      tags: [Contact]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Message sent successfully
+
+  /api/analytics/time:
+    get:
+      summary: Get time-series traffic visits (hourly/monthly)
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: granularity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hour, month]
+            default: hour
+      responses:
+        '200':
+          description: Time-series traffic data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hourly:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HourlyStat'
+                  monthly:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MonthlyStat'
+              example:
+                hourly:
+                  - hour: "08:00"
+                    visits: 15
+                  - hour: "09:00"
+                    visits: 42
+                  - hour: "10:00"
+                    visits: 89
+                monthly:
+                  - month: "Ian"
+                    visits: 350
+                  - month: "Feb"
+                    visits: 420
+                  - month: "Mar"
+                    visits: 610
+
+  /api/analytics/popular:
+    get:
+      summary: Get top 10 attractions by popularity
+      tags: [Analytics]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Top attractions data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopAttractionStat'
+              example:
+                - attractionId: "1"
+                  name: "Castelul Bran"
+                  views: 5430
+                - attractionId: "2"
+                  name: "Palatul Culturii"
+                  views: 4120
+
+  /api/notifications/stream:
+    get:
+      summary: Subscribe to SSE notifications
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: SSE stream of notifications
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Event payload containing the notification
+
+  /api/proximity:
+    get:
+      summary: Get nearby attractions based on geolocation
+      tags: [Attractions]
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: List of nearby attractions sorted by distance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attraction'
+
