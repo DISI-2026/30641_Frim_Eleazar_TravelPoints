@@ -1,6 +1,5 @@
 package ro.utcn.travelpoints.travelpoints_backend.attraction.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +65,11 @@ public ResponseEntity<ApiResponse<AttractionResponse>> updateAttraction(
     public ResponseEntity<ApiResponse<Void>> deleteAttraction(@PathVariable UUID id) {
         attractionService.deleteAttraction(id);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AttractionResponse>> getAttractionById(@PathVariable UUID id) {
+        AttractionResponse response = attractionService.getAttractionById(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping

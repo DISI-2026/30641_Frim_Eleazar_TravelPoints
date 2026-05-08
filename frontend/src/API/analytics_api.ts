@@ -12,23 +12,23 @@ export type MonthlyStat = {
 
 export function getAnalyticsTime
     (
-        attraction_id: number,
+        attraction_id: string,
         granularity: 'hour'
     ): Promise<ResponseType<HourlyStat[]>>;
 
 export function getAnalyticsTime
     (
-        attraction_id: number,
+        attraction_id: string,
         granularity: 'month'
     ): Promise<ResponseType<MonthlyStat[]>>;
 
 export function getAnalyticsTime
     (
-        attraction_id: number,
+        attraction_id: string,
         granularity: 'hour' | 'month'
     ): Promise<ResponseType<HourlyStat[] | MonthlyStat[]>>;
 
-export async function getAnalyticsTime(attraction_id: number, granularity: 'hour' | 'month' = 'hour')
+export async function getAnalyticsTime(attraction_id: string, granularity: 'hour' | 'month' = 'hour')
     : Promise<ResponseType<HourlyStat[] | MonthlyStat[]>> {
 
     try {

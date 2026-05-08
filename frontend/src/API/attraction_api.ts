@@ -2,16 +2,16 @@ import { attractionAPI, returnResponseWithDefaultError, type ResponseType } from
 
 export type AttractionType =
     {
-        id?: number,
+        id?: string,
         name: string;
         description: string;
         location: string;
-        audioFile: File | null;
+        audioFile: string | null;
     }
 
 export type ReviewType =
     {
-        id?: number,
+        id?: string,
         author: string;
         text: string;
     }

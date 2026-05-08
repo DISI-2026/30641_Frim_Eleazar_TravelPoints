@@ -1,6 +1,6 @@
 import { Button, Card, Container, Form, ListGroup, Modal, Spinner } from "react-bootstrap";
 import { deleteAttraction, getAttractions, updateAttraction, type AttractionType } from '../API/attraction_api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from "react";
 import { AttractionForm } from "./NewAttraction";
 import './AttractionsPage.css'
@@ -33,8 +33,10 @@ type AttractionFilter = {
     name: string
 }
 
+
 export default function AttractionsPage() {
     const { isLoggedIn } = useLogin()
+    const queryClient = useQueryClient();
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attractionToEdit, setAttractionToEdit] = useState<AttractionType | null>(null);
     const [attractionFilter, setAttractionFilter] = useState<AttractionFilter>({ location: undefined, name: "" });
@@ -111,25 +113,25 @@ export default function AttractionsPage() {
         });
     }
 
-    const toggleWishlist = async (attractionId: number) => {
+    const toggleWishlist = async (attractionId: string) => {
         if (wishlists === undefined) {
             return
         }
 
-        if (wishlists.some((wl) => wl.id === attractionId)) {
+        const isAlreadyInWishlist = wishlists.some((wl) => String(wl.id) === String(attractionId));
+
+        if (isAlreadyInWishlist) {
             await removeWishlist(attractionId).then((res) => {
-                if (!res.success) {
-                    alert(res.error)
-                }
-            })
-            return
+                if (!res.success) alert(res.error);
+            });
+        } else {
+            await addWishlist(attractionId).then((res) => {
+                if (!res.success) alert(res.error);
+            });
         }
 
-        await addWishlist(attractionId).then((res) => {
-            if (!res.success) {
-                alert(res.error)
-            }
-        })
+        // <-- SOLUTIA: Spunem React Query sa faca refetch instant la wishlist
+        queryClient.invalidateQueries({ queryKey: ["wishlists"] });
     }
 
     return (
@@ -190,7 +192,7 @@ export default function AttractionsPage() {
                                 </Card.Title>
                                 <Card.Text>{attraction.description}</Card.Text>
                                 <Card.Text>{attraction.location}</Card.Text>
-                                {attraction.audioFile && <audio controls src={URL.createObjectURL(attraction.audioFile)} />}
+
 
                                 <Button variant="text" className="btn-orange mx-3 py-2 rounded-pill" onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
                                 <Button variant="danger" className="btn-slim" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
@@ -202,9 +204,11 @@ export default function AttractionsPage() {
                                     :
                                     (
                                         <Button
-                                            onClick={() => toggleWishlist(attraction.id!)}
-                                            variant="text" className="btn-glow btn-slim p-2 rounded-5 py-1 m-2">
-                                            {wishlists.some((wl) => wl.id === attraction.id) ? (
+                                            onClick={() => toggleWishlist(String(attraction.id))}
+                                            variant="text"
+                                            className="btn-glow btn-slim p-2 rounded-5 py-1 m-2"
+                                        >
+                                            {wishlists.some((wl) => String(wl.id) === String(attraction.id)) ? (
                                                 <FaHeart />
                                             ) : (
                                                 <FaRegHeart />

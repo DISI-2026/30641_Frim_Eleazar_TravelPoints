@@ -18,7 +18,7 @@ const AttractionPage = () => {
             if (res.success === false) {
                 throw new Error(res.error)
             }
-            return res.data.findLast((attr) => attr.id === Number(id))
+            return res.data.findLast((attr) => String(attr.id) === String(id))
         })
     });
 
@@ -76,6 +76,13 @@ const AttractionPage = () => {
             <Card.Title>{attraction.name}</Card.Title>
             <Card.Text>{attraction.description}</Card.Text>
             <Card.Text>{attraction.location}</Card.Text>
+            {attraction.audioFile && (
+                <audio
+                    controls
+                    src={`http://localhost:8080/api/${attraction.audioFile}`}
+                    className="w-100 mb-3"
+                />
+            )}
             <Card.Body>
                 <Analytics attraction_id={attraction.id!} />
             </Card.Body>
