@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Container, Form, ListGroup, Modal } from 'react-bootstrap';
 import { useState } from 'react';
 import { useLogin } from '../context/AuthContext';
+import Analytics from './Analytics';
 
 const AttractionPage = () => {
     const { id } = useParams();
@@ -75,6 +76,9 @@ const AttractionPage = () => {
             <Card.Title>{attraction.name}</Card.Title>
             <Card.Text>{attraction.description}</Card.Text>
             <Card.Text>{attraction.location}</Card.Text>
+            <Card.Body>
+                <Analytics attraction_id={attraction.id!} />
+            </Card.Body>
 
             {
                 isLoggedIn &&

@@ -17,6 +17,8 @@ export default function Layout() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto align-items-center gap-3">
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
+                            <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
+                            <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
                             <NavDropdown title="Discover" id="discover-dropdown" className='fw-bold'>
                                 <NavDropdown.Item href="/destinations/paris">Paris</NavDropdown.Item>
                                 <NavDropdown.Item href="/destinations/tokyo">Tokyo</NavDropdown.Item>
