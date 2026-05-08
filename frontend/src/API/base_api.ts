@@ -10,6 +10,7 @@ const auth_endpoint = location + (import.meta.env.VITE_AUTH_API || "/auth")
 const attraction_endpoint = location + (import.meta.env.VITE_ATTRACTION_API || "/attraction")
 const wishlist_endpoint = location + (import.meta.env.VITE_WISHLIST_API || "/wishlist")
 const analytics_endpoint = location + (import.meta.env.VITE_ANALYTICS_API || "/analytics")
+export const notifications_endpoint = location + (import.meta.env.VITE_NOTIFICATIONS_API || "/notifications/stream")
 
 export const authAPI = axios.create({ baseURL: auth_endpoint })
 export const attractionAPI = axios.create({ baseURL: attraction_endpoint })
