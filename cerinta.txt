@@ -1,0 +1,28 @@
+Aplicație – TravelPoints
+
+Se cere dezvoltarea unei aplicații pentru a oferi informații turiștilor despre diferite locații și obiective
+turistice. Această aplicație va fi folosită de 2 tipuri distincte de utilizatori. Utilizatorii se pot înregistra,
+autentifica și reseta parola în platformă folosind o adresă de email validă.
+
+
+Administratori:
+
+• Înregistrează diferite obiective turistice, specificând locația și descrierea lor în format text și
+audio, precum și diverse informații referitoare la prețul de intrare, oferte, etc.
+• Șterge, modifică sau adaugă detalii despre obiectivele existente în platformă
+• Vizualizează informații (grafice) despre cele mai vizitate obiective și locații
+• Vizualizează informații (grafice) despre frecvența vizitelor pe ore în cadrul unei zile și despre
+frecvența vizitelor pe luni în cadrul unui an
+• Notifică utilizatorii logați în momentul în care se adaugă diferite oferte corespunzătoare
+obiectivelor aflate pe listele de interes
+
+
+Turist:
+
+• Poate să caute diferite obiective turistice în funcție de locație și categorie (fără autentificare)
+• Poate să vizualizeze informațiile text sau să asculte fișierele audio corespunzătoare unui
+obiectiv/locație selectată (fără autentificare)
+• Poate să adauge comentarii și review-uri pentru diferitele obiective turistice
+• Poate să trimită email administratorului (din platformă) pentru a cere mai multe informații sau
+pentru a solicita modificarea/actualizarea informațiilor aferente unui obiectiv turistic
+• Poate marca anumite obiective turistice ca fiind de interes (Wishlist)
