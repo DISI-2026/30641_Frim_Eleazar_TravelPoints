@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Secrets
-.env
+# .env # i want to expose it actually. no api keys in this project
