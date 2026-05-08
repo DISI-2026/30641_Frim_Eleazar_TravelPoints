@@ -480,18 +480,13 @@ paths:
         '200':
           description: Message sent successfully
 
-  /api/analytics/{id}/time:
+  /api/analytics/time:
     get:
-      summary: Get time-series traffic visits (hourly/monthly) for an attraction
+      summary: Get time-series traffic visits (hourly/monthly)
       tags: [Analytics]
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
         - name: granularity
           in: query
           required: false
@@ -505,32 +500,31 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                  - type: array
+                type: object
+                properties:
+                  hourly:
+                    type: array
                     items:
                       $ref: '#/components/schemas/HourlyStat'
-                  - type: array
+                  monthly:
+                    type: array
                     items:
                       $ref: '#/components/schemas/MonthlyStat'
-              examples:
-                hourlyData:
-                  summary: "granularity is 'hour'"
-                  value:
-                    - hour: "08:00"
-                      visits: 15
-                    - hour: "09:00"
-                      visits: 42
-                    - hour: "10:00"
-                      visits: 89
-                monthlyData:
-                  summary: "granularity is 'month'"
-                  value:
-                    - month: "Ian"
-                      visits: 350
-                    - month: "Feb"
-                      visits: 420
-                    - month: "Mar"
-                      visits: 610
+              example:
+                hourly:
+                  - hour: "08:00"
+                    visits: 15
+                  - hour: "09:00"
+                    visits: 42
+                  - hour: "10:00"
+                    visits: 89
+                monthly:
+                  - month: "Ian"
+                    visits: 350
+                  - month: "Feb"
+                    visits: 420
+                  - month: "Mar"
+                    visits: 610
 
   /api/analytics/popular:
     get:
