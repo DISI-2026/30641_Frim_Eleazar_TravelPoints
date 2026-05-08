@@ -2,7 +2,7 @@
   "lastMigration": 33,
   "name": "DISI API",
   "uuid": "965672b5-d49f-4da2-a6cb-4e0d0ad5930e",
-  "port": 3000,
+  "port": 8080,
   "routes": [
     {
       "uuid": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
@@ -639,6 +639,156 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "121b202b-e000-4170-a401-e2eb41e8aa18",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/analytics/:id/time",
+      "responses": [
+        {
+          "uuid": "b3f415b1-8ec6-450d-a50e-1bb6375c842e",
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"hour\":10,\n      \"visits\": 30\n    },\n    {\n      \"hour\":11,\n      \"visits\": 300\n    },\n    {\n      \"hour\":12,\n      \"visits\": 350\n    },\n    {\n      \"hour\":15,\n      \"visits\": 370\n    },\n    {\n      \"hour\":20,\n      \"visits\": 360\n    },\n    {\n      \"hour\":21,\n      \"visits\": 120\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return hourly analytics",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "granularity",
+              "value": "hour",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "1",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "36978629-f528-4aa0-bc6b-3f276fbebd31",
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"month\":1,\n      \"visits\": 2500\n    },\n    {\n      \"month\":2,\n      \"visits\": 2200\n    },\n    {\n      \"month\":3,\n      \"visits\": 1800\n    },\n    {\n      \"month\":4,\n      \"visits\": 3000\n    },\n    {\n      \"month\":5,\n      \"visits\": 3600\n    },\n    {\n      \"month\":6,\n      \"visits\": 12000\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return monthly analytics",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "granularity",
+              "value": "month",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "1",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "716503a9-1e7a-4732-8cad-548a7580159c",
+          "body": "{\n  \"success\": false,\n  \"error\" : \"Eroare simulata cu succes din backend\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return error",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -680,6 +830,10 @@
     {
       "type": "route",
       "uuid": "80eb0322-9474-4a9e-be19-720b87062677"
+    },
+    {
+      "type": "route",
+      "uuid": "121b202b-e000-4170-a401-e2eb41e8aa18"
     }
   ],
   "folders": [],

@@ -499,6 +499,11 @@ paths:
             type: string
             enum: [hour, month]
             default: hour
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Time-series traffic data
