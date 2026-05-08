@@ -33,13 +33,13 @@ export async function getAnalyticsTime(attraction_id: number, granularity: 'hour
 
     try {
         if (granularity === 'hour') {
-            return analyticsAPI.get<ResponseType<HourlyStat[]>>("/time", {
-                params: { granularity, attraction_id }
+            return analyticsAPI.get<ResponseType<HourlyStat[]>>(`/${attraction_id}/time`, {
+                params: { granularity }
             }).then(response => response.data);
         }
 
-        return analyticsAPI.get<ResponseType<MonthlyStat[]>>("/time", {
-            params: { granularity, attraction_id }
+        return analyticsAPI.get<ResponseType<MonthlyStat[]>>(`/${attraction_id}/time`, {
+            params: { granularity }
         }).then(response => response.data);
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Problema la culegerea analiticilor";

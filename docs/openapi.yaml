@@ -480,7 +480,7 @@ paths:
         '200':
           description: Message sent successfully
 
-  /api/analytics/time:
+  /api/analytics/{id}/time:
     get:
       summary: Get time-series traffic visits (hourly/monthly)
       tags: [Analytics]
@@ -494,6 +494,11 @@ paths:
             type: string
             enum: [hour, month]
             default: hour
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Time-series traffic data

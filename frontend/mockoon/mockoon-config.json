@@ -645,7 +645,7 @@
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "api/analytics/time",
+      "endpoint": "api/analytics/:id/time",
       "responses": [
         {
           "uuid": "b3f415b1-8ec6-450d-a50e-1bb6375c842e",
@@ -684,8 +684,8 @@
               "operator": "equals"
             },
             {
-              "target": "query",
-              "modifier": "attraction_id",
+              "target": "params",
+              "modifier": "id",
               "value": "1",
               "invert": true,
               "operator": "equals"
@@ -735,8 +735,8 @@
               "operator": "equals"
             },
             {
-              "target": "query",
-              "modifier": "attraction_id",
+              "target": "params",
+              "modifier": "id",
               "value": "1",
               "invert": true,
               "operator": "equals"
