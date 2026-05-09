@@ -1,15 +1,16 @@
 package ro.utcn.travelpoints.travelpoints_backend.wishlist.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse;
 import ro.utcn.travelpoints.travelpoints_backend.wishlist.dto.WishlistResponse;
 import ro.utcn.travelpoints.travelpoints_backend.wishlist.service.WishlistService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import java.util.UUID;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/wishlist")
@@ -19,26 +20,26 @@ public class WishlistController {
     private final WishlistService wishlistService;
 
     @GetMapping
-    public ResponseEntity<List<WishlistResponse>> getWishlist(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<WishlistResponse>>> getWishlist(Authentication authentication) {
         List<WishlistResponse> response = wishlistService.getWishlist(authentication.getName());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/{attractionId}")
-    public ResponseEntity<Void> addToWishlist(
+    public ResponseEntity<ApiResponse<Void>> addToWishlist(
             @PathVariable UUID attractionId,
             Authentication authentication
     ) {
         wishlistService.addToWishlist(authentication.getName(), attractionId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success());
     }
 
     @DeleteMapping("/{attractionId}")
-    public ResponseEntity<Void> removeFromWishlist(
+    public ResponseEntity<ApiResponse<Void>> removeFromWishlist(
             @PathVariable UUID attractionId,
             Authentication authentication
     ) {
         wishlistService.removeFromWishlist(authentication.getName(), attractionId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

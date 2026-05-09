@@ -2,7 +2,7 @@ import { wishlistAPI, returnResponseWithDefaultError, type ResponseType } from "
 
 
 export type WishlistType = {
-    id: number
+    id: string
 }
 
 export async function getWishlists(): Promise<ResponseType<WishlistType[]>> {
@@ -15,7 +15,7 @@ export async function getWishlists(): Promise<ResponseType<WishlistType[]>> {
     }
 }
 
-export async function removeWishlist(attractionId: number): Promise<ResponseType> {
+export async function removeWishlist(attractionId: string): Promise<ResponseType> {
     try {
         const response = await wishlistAPI.delete<ResponseType>(`/${attractionId}`);
         return returnResponseWithDefaultError(response.data, "Problema la scoaterea wishlist-ului")
@@ -25,7 +25,7 @@ export async function removeWishlist(attractionId: number): Promise<ResponseType
     }
 }
 
-export async function addWishlist(attractionId: number): Promise<ResponseType> {
+export async function addWishlist(attractionId: string): Promise<ResponseType> {
     try {
         const response = await wishlistAPI.post<ResponseType>(`/${attractionId}`);
         return returnResponseWithDefaultError(response.data, "Problema la adaugarea wishlist-ului")

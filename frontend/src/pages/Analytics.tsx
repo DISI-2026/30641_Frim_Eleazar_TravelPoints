@@ -71,7 +71,7 @@ function processChartData(
     };
 }
 
-const Analytics = ({ attraction_id }: { attraction_id: number }) => {
+const Analytics = ({ attraction_id }: { attraction_id: string }) => {
     const [granularity, setGranularity] = useState<'hour' | 'month'>('hour');
 
     const { data: analyticsData, isLoading, isError, error } = useQuery({
