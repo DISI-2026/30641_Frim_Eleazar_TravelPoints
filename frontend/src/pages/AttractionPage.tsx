@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { addReview, getAttractions, getReviews } from '../API/attraction_api';
+import { addReview, getAttractionById, getReviews } from '../API/attraction_api';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Container, Form, ListGroup, Modal } from 'react-bootstrap';
 import { useState } from 'react';
@@ -8,17 +8,17 @@ import Analytics from './Analytics';
 
 const AttractionPage = () => {
     const { id } = useParams();
-    const { isLoggedIn } = useLogin()
+    const { isLoggedIn,role } = useLogin()
     const [formOpen, setFormOpen] = useState(false);
     const [recenzie, setRecenzie] = useState("");
 
     const { data: attraction, isError, error, isLoading } = useQuery({
         queryKey: ["attraction", id],
-        queryFn: () => getAttractions().then((res) => {
+        queryFn: () => getAttractionById(id!).then((res) => {
             if (res.success === false) {
                 throw new Error(res.error)
             }
-            return res.data.findLast((attr) => String(attr.id) === String(id))
+            return res.data;
         })
     });
 
@@ -83,9 +83,12 @@ const AttractionPage = () => {
                     className="w-100 mb-3"
                 />
             )}
+            {
+            role === 'ROLE_ADMIN' && (
             <Card.Body>
                 <Analytics attraction_id={attraction.id!} />
             </Card.Body>
+            )}
 
             {
                 isLoggedIn &&

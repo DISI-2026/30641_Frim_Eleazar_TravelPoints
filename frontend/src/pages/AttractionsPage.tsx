@@ -59,7 +59,8 @@ export default function AttractionsPage() {
                 throw new Error(res.error)
             }
             return res.data
-        })
+        }),
+        enabled: isLoggedIn
     })
 
     if (attractions === undefined) {
@@ -74,7 +75,7 @@ export default function AttractionsPage() {
         )
     }
 
-    if (isLoading || isWishlistLoading) {
+    if (isLoading || (isLoggedIn && isWishlistLoading)) {
         return (
             <Spinner />
         )

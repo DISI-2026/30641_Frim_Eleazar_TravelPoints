@@ -44,10 +44,12 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/*").permitAll()             
                         .requestMatchers("/wishlist/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions").permitAll()
+                        .requestMatchers("/analytics/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/attractions/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/attractions/**").hasRole("ADMIN")
                         .requestMatchers("/wishlist/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
