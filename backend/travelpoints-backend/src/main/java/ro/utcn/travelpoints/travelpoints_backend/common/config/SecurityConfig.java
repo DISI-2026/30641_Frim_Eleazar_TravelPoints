@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/attractions/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/attractions/**").hasRole("ADMIN")
                         .requestMatchers("/wishlist/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/contact").hasRole("TOURIST")
 
                         .anyRequest().authenticated()
                 )
