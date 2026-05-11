@@ -21,6 +21,10 @@ import org.springframework.data.jpa.domain.Specification;
 import ro.utcn.travelpoints.travelpoints_backend.attraction.repository.AttractionSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
+import ro.utcn.travelpoints.travelpoints_backend.analytics.service.AnalyticsService;
+import ro.utcn.travelpoints.travelpoints_backend.review.repository.ReviewRepository;
+import ro.utcn.travelpoints.travelpoints_backend.wishlist.repository.WishlistRepository;
+import ro.utcn.travelpoints.travelpoints_backend.analytics.repository.VisitRepository;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -35,6 +39,10 @@ public class AttractionService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final AnalyticsService analyticsService;
+    private final ReviewRepository reviewRepository;
+    private final WishlistRepository wishlistRepository;
+    private final VisitRepository visitRepository;
 
    @Transactional
 public AttractionResponse createAttraction(
@@ -47,7 +55,6 @@ public AttractionResponse createAttraction(
         MultipartFile audioFile,
         String creatorEmail
 ) {
-    // Rezolvăm locația: ori prin UUID, ori prin nume (creăm dacă nu există)
     Location location;
     if (locationId != null) {
         location = locationRepository.findById(locationId)
@@ -66,7 +73,7 @@ public AttractionResponse createAttraction(
         throw new ResourceNotFoundException("Location must be provided (locationId or location name)");
     }
 
-    // Categoria — opțională momentan, dăm default dacă nu vine
+    // Categoria optionala momentan, dam default dacă nu vine
     Category category;
     if (categoryId != null) {
         category = categoryRepository.findById(categoryId)
@@ -105,12 +112,11 @@ public AttractionResponse createAttraction(
 }
 
     @Transactional
-    public AttractionResponse updateAttraction(UUID id, UpdateAttractionRequest request) {
+    public AttractionResponse updateAttraction(UUID id, UpdateAttractionRequest request, String locationName, MultipartFile audioFile) {
         Attraction attraction = attractionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Attraction not found with id: " + id));
 
-        // null ii "nu modifica"
         if (request.name() != null) {
             attraction.setName(request.name());
         }
@@ -123,18 +129,46 @@ public AttractionResponse createAttraction(
             attraction.setEntryPrice(request.entryPrice());
         }
 
-        if (request.locationId() != null) {
+        if (request.categoryId() != null) {
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category not found with id: " + request.categoryId()));
+            attraction.setCategory(category);
+        }
+
+        // Gestionare Locatie (dupa nume sau dupa ID)
+        if (locationName != null && !locationName.isBlank()) {
+            Location location = locationRepository.findAll().stream()
+                    .filter(l -> l.getName().equalsIgnoreCase(locationName.trim()))
+                    .findFirst()
+                    .orElseGet(() -> locationRepository.save(Location.builder()
+                            .name(locationName.trim())
+                            .latitude(java.math.BigDecimal.ZERO)
+                            .longitude(java.math.BigDecimal.ZERO)
+                            .build()));
+            attraction.setLocation(location);
+        } else if (request.locationId() != null) {
             Location location = locationRepository.findById(request.locationId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Location not found with id: " + request.locationId()));
             attraction.setLocation(location);
         }
 
-        if (request.categoryId() != null) {
-            Category category = categoryRepository.findById(request.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Category not found with id: " + request.categoryId()));
-            attraction.setCategory(category);
+        // Gestionare Fisier Audio (daca nu e null, actualizam. Daca e null, pastram valoarea veche din BD)
+        if (audioFile != null && !audioFile.isEmpty()) {
+            String oldAudioPath = attraction.getDescriptionAudioUrl();
+
+            // Stergem fisierul vechi pentru a nu ocupa spatiu inutil pe server
+            if (oldAudioPath != null) {
+                try {
+                    fileStorageService.deleteAudio(oldAudioPath);
+                } catch (Exception e) {
+                    log.warn("Nu s-a putut sterge fisierul audio vechi pentru atractia {}: {}", id, e.getMessage());
+                }
+            }
+
+            String newAudioPath = fileStorageService.storeAudio(audioFile);
+            attraction.setDescriptionAudioUrl(newAudioPath);
         }
 
         Attraction saved = attractionRepository.save(attraction);
@@ -151,11 +185,14 @@ public AttractionResponse createAttraction(
 
         String audioPath = attraction.getDescriptionAudioUrl();
 
+        // Stergem dependentele inainte de a sterge atractia
+        visitRepository.deleteAllByAttractionId(id);
+        reviewRepository.deleteAllByAttractionId(id);
+        wishlistRepository.deleteAllByAttractionId(id);
+
         attractionRepository.delete(attraction);
         log.info("Deleted attraction '{}' with id {}", attraction.getName(), id);
 
-        
-       
         if (audioPath != null) {
             try {
                 fileStorageService.deleteAudio(audioPath);
@@ -164,7 +201,6 @@ public AttractionResponse createAttraction(
                         audioPath, id, e.getMessage());
             }
         }
-
     }
     @Transactional(readOnly = true)
     public List<AttractionResponse> searchAttractions(String keyword, String location, String category) {
@@ -184,11 +220,12 @@ public AttractionResponse createAttraction(
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AttractionResponse getAttractionById(UUID id) {
         Attraction attraction = attractionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Attraction not found with id: " + id));
+        analyticsService.recordVisit(id);
         return AttractionMapper.toResponse(attraction);
     }
 }

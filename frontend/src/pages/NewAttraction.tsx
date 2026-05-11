@@ -8,29 +8,7 @@ import { createAttraction, type AttractionType } from "../API/attraction_api";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav', 'audio/x-wav', "audio/vnd.wave"];
 
-const validationSchema = Yup.object().shape({
-    name: Yup.string()
-        .required("Va rugam introduceti numele atracției"),
-    description: Yup.string()
-        .required("Va rugam introduceti descrierea"),
-    location: Yup.string()
-        .required("Va rugam introduceti locația"),
-    audioFile: Yup.mixed<File>()
-        .required("Va rugam selectati un fisier audio")
-        .test('fileSize', 'Fișierul este prea mare (Max 2MB)', (value) => {
-            if (value instanceof File) {
-                return value.size <= MAX_FILE_SIZE;
-            }
-            return false;
-        })
-        .test('fileType', 'Fișierul trebuie sa fie audio', (value) => {
-            console.log(value)
-            if (value instanceof File) {
-                return SUPPORTED_FORMATS.includes(value.type);
-            }
-            return false;
-        })
-});
+
 
 export function AttractionForm({ isEditing, initialValues = {
     name: "",
@@ -38,12 +16,46 @@ export function AttractionForm({ isEditing, initialValues = {
     location: "",
     audioFile: null,
 }, onSubmitFunc }: { isEditing?: boolean, initialValues?: AttractionType, onSubmitFunc: (values: AttractionType) => (Promise<void> | void) }) {
+
+
+
+    const dynamicValidationSchema = Yup.object().shape({
+        name: Yup.string()
+            .required("Va rugam introduceti numele atractiei"),
+        description: Yup.string()
+            .required("Va rugam introduceti descrierea"),
+        location: Yup.string()
+            .required("Va rugam introduceti locatia"),
+        audioFile: Yup.mixed<File>()
+            .test('is-required', 'Va rugam selectati un fisier audio', (value) => {
+                // Daca adaugam o atractie noua, fisierul este obligatoriu
+                if (!isEditing && !value) {
+                    return false;
+                }
+                return true;
+            })
+            .test('fileSize', 'Fisierul este prea mare (Max 10MB)', (value) => {
+                // Verificam dimensiunea doar daca utilizatorul incarca efectiv un fisier nou
+                if (value instanceof File) {
+                    return value.size <= MAX_FILE_SIZE;
+                }
+                return true;
+            })
+            .test('fileType', 'Fisierul trebuie sa fie de tip audio', (value) => {
+                // Verificam tipul doar daca utilizatorul incarca efectiv un fisier nou
+                if (value instanceof File) {
+                    return SUPPORTED_FORMATS.includes(value.type);
+                }
+                return true;
+            })
+    });
+
     return (
         <div className="new-attraction-form-wrapper">
             <h1 className="new-attraction-title">{isEditing ? "Editează atracția" : "Creează o nouă atracție"}</h1>
             < Formik
                 initialValues={initialValues}
-                validationSchema={validationSchema}
+                validationSchema={dynamicValidationSchema}
                 onSubmit={onSubmitFunc}
             >
                 {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (

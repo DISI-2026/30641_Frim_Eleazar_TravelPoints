@@ -12,8 +12,7 @@ import java.util.UUID;
 public interface WishlistRepository extends JpaRepository<Wishlist, UUID> {
 
     List<Wishlist> findAllByUserId(UUID userId);
-
     Optional<Wishlist> findByUserIdAndAttractionId(UUID userId, UUID attractionId);
-
     boolean existsByUserIdAndAttractionId(UUID userId, UUID attractionId);
+    void deleteAllByAttractionId(UUID attractionId);
 }

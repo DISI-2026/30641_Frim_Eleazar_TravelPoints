@@ -77,4 +77,14 @@ export async function addReview(attraction: AttractionType, text: string): Promi
         const errorMessage = err instanceof Error ? err.message : "Problema la adaugarea recenziei";
         return { success: false, error: errorMessage };
     }
+
+}
+export async function getAttractionById(id: string): Promise<ResponseType<AttractionType>> {
+    try {
+        const response = await attractionAPI.get<ResponseType<AttractionType>>(`/${id}`);
+        return returnResponseWithDefaultError(response.data, "Problema la preluarea detaliilor atractiei")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la preluarea detaliilor atractiei";
+        return { success: false, error: errorMessage };
+    }
 }
