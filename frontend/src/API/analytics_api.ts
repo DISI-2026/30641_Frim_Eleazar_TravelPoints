@@ -10,6 +10,12 @@ export type MonthlyStat = {
     visits: number;
 }
 
+export type AttractionPopularity = {
+    attractionId: string;
+    name: string;
+    views: number;
+}
+
 export function getAnalyticsTime
     (
         attraction_id: string,
@@ -45,4 +51,9 @@ export async function getAnalyticsTime(attraction_id: string, granularity: 'hour
         const errorMessage = err instanceof Error ? err.message : "Problema la culegerea analiticilor";
         return { success: false, error: errorMessage };
     }
+}
+
+export async function getAnalyticsPopularity(): Promise<ResponseType<AttractionPopularity[]>> {
+    return analyticsAPI.get<ResponseType<AttractionPopularity[]>>(`/popular`)
+        .then(response => response.data);
 }

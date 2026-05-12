@@ -7,6 +7,26 @@ import './AttractionsPage.css'
 import { addWishlist, getWishlists, removeWishlist } from "../API/wishlist_api";
 import { FaExternalLinkAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useLogin } from "../context/AuthContext";
+import { getAnalyticsPopularity } from "../API/analytics_api";
+import { Bar } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () => void; onConfirm: () => void }) => (
     <Modal show={show} onHide={onHide} centered>
@@ -55,6 +75,17 @@ export default function AttractionsPage() {
         queryKey: ["wishlists"],
         refetchInterval: 5000,
         queryFn: () => getWishlists().then((res) => {
+            if (res.success === false) {
+                throw new Error(res.error)
+            }
+            return res.data
+        }),
+        enabled: isLoggedIn
+    })
+
+    const { data: popularity, isError: isPopularityError, error: popularityError, isLoading: isPopularityLoading } = useQuery({
+        queryKey: ["popularity"],
+        queryFn: () => getAnalyticsPopularity().then(res => {
             if (res.success === false) {
                 throw new Error(res.error)
             }
@@ -175,6 +206,45 @@ export default function AttractionsPage() {
                     </Form.Select>
                 </Form.Group>
             </Form>
+
+            {
+                isLoggedIn &&
+                <>
+                    {isPopularityLoading && <>
+                        Incarcare detalii popularitate <Spinner />
+                    </>
+                    }
+                    {isPopularityError && <p>Eroare la gasirea popularitatii atractiilor: {popularityError.message}</p>}
+                    {popularity && <>
+                        <Bar options={{
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom' as const,
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Popularitatea atractiilor',
+                                },
+                            },
+                        }}
+                            data={{
+                                labels: popularity.map((item) => item.name),
+                                datasets: [
+                                    {
+                                        label: 'Vizite',
+                                        data: popularity.map((item) => item.views),
+                                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1,
+                                    },
+                                ],
+                            }}
+                        />;
+                    </>
+                    }
+                </>
+            }
 
             <ListGroup>
                 {attractions.filter((att) => {
