@@ -6,11 +6,11 @@ import java.util.UUID;
 public record AttractionResponse(
         UUID id,
         String name,
-        String descriptionText,
-        String descriptionAudioUrl,
+        String description,
+        String audioFile,
         BigDecimal entryPrice,
         //UUID locationId,
-        String locationName,
+        String location,
       //  UUID categoryId,
         String categoryName,
         UUID createdBy

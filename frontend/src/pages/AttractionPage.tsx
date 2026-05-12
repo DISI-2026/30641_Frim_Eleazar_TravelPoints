@@ -1,24 +1,39 @@
 import { useParams } from 'react-router-dom';
-import { addReview, getAttractions, getReviews } from '../API/attraction_api';
+import { addReview, getAttractionById, getReviews } from '../API/attraction_api';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Card, Container, Form, ListGroup, Modal } from 'react-bootstrap';
 import { useState } from 'react';
 import { useLogin } from '../context/AuthContext';
 import Analytics from './Analytics';
+import { sendContactEmail } from '../API/contact_api';
 
 const AttractionPage = () => {
     const { id } = useParams();
-    const { isLoggedIn } = useLogin()
+    const { isLoggedIn,role } = useLogin()
     const [formOpen, setFormOpen] = useState(false);
     const [recenzie, setRecenzie] = useState("");
+    const [contactModalOpen, setContactModalOpen] = useState(false);
+    const [contactMessage, setContactMessage] = useState("");
+
+    const handleContactAdmin = async () => {
+        setContactModalOpen(false);
+        const subject = `Sugestie/Intrebare despre ${attraction!.name}`;
+        const res = await sendContactEmail(subject, contactMessage);
+        if (!res.success) {
+            alert(res.error);
+        } else {
+            alert("Mesaj trimis cu succes catre administrator!");
+            setContactMessage("");
+        }
+    };
 
     const { data: attraction, isError, error, isLoading } = useQuery({
         queryKey: ["attraction", id],
-        queryFn: () => getAttractions().then((res) => {
+        queryFn: () => getAttractionById(id!).then((res) => {
             if (res.success === false) {
                 throw new Error(res.error)
             }
-            return res.data.findLast((attr) => attr.id === Number(id))
+            return res.data;
         })
     });
 
@@ -76,9 +91,19 @@ const AttractionPage = () => {
             <Card.Title>{attraction.name}</Card.Title>
             <Card.Text>{attraction.description}</Card.Text>
             <Card.Text>{attraction.location}</Card.Text>
+            {attraction.audioFile && (
+                <audio
+                    controls
+                    src={`http://localhost:8080/api/${attraction.audioFile}`}
+                    className="w-100 mb-3"
+                />
+            )}
+            {
+            role === 'ROLE_ADMIN' && (
             <Card.Body>
                 <Analytics attraction_id={attraction.id!} />
             </Card.Body>
+            )}
 
             {
                 isLoggedIn &&
@@ -131,6 +156,45 @@ const AttractionPage = () => {
                 )
                 :
                 <h3>Nu exista recenzii pentru aceasta atractie</h3>
+            }
+            {
+                isLoggedIn && role === 'ROLE_TOURIST' &&
+                <>
+                    <Button variant="outline-primary" className="ms-2" onClick={() => setContactModalOpen(true)}>
+                        Contacteaza Admin
+                    </Button>
+                    <Modal show={contactModalOpen} onHide={() => setContactModalOpen(false)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Contacteaza Administratorul</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Subiect</Form.Label>
+                                    <Form.Control type="text" value={`Despre ${attraction.name}`} disabled />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mesaj</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={4}
+                                        placeholder="Scrie intrebarea sau sugestia de modificare..."
+                                        value={contactMessage}
+                                        onChange={e => setContactMessage(e.target.value)}
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setContactModalOpen(false)}>
+                                Anuleaza
+                            </Button>
+                            <Button variant="primary" onClick={handleContactAdmin} disabled={contactMessage.trim() === ""}>
+                                Trimite Email
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
             }
         </Container >
     )

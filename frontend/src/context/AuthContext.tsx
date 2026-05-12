@@ -7,6 +7,7 @@ import { loginUser, logoutUser, registerUser } from '../API/auth_api'
 interface ILogin {
     email: string,
     isLoggedIn: boolean,
+    role: string | undefined,
     loginFn: (email: string, password: string) => Promise<string | true>,
     registerFn: (email: string, password: string) => Promise<string | true>,
     logoutFn: () => void
@@ -27,18 +28,33 @@ export function useLogin() {
 export function LoginProvider({ children }: { children: ReactNode }) {
     const [email, setEmail] = useState('')
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [role, setRole] = useState<string | undefined>(undefined)
     const [dataLoading, setDataLoading] = useState(true)
 
     const innerLogin = (email?: string) => {
         if (email === undefined) {
             setEmail('')
             setIsLoggedIn(false)
+            setRole(undefined)
             eraseLocalStorageLogin()
             return
         }
         setEmail(email)
         setIsLoggedIn(true)
         setLocalStorageLogin({ email })
+        const token = loadAuthToken();
+        if (token) {
+            try {
+                const payload = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payload));
+                // Backend-ul returneaza un array de roluri, ex: ["ROLE_ADMIN"]
+                if (decodedPayload.roles && decodedPayload.roles.length > 0) {
+                    setRole(decodedPayload.roles[0]);
+                }
+            } catch (e) {
+                console.error("Eroare la decodarea token-ului", e);
+            }
+        }
     }
 
     useEffect(() => {
@@ -102,6 +118,7 @@ export function LoginProvider({ children }: { children: ReactNode }) {
     return <LoginContext.Provider value={{
         isLoggedIn,
         email,
+        role,
         loginFn,
         registerFn,
         logoutFn

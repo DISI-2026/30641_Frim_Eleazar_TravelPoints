@@ -2,16 +2,16 @@ import { attractionAPI, returnResponseWithDefaultError, type ResponseType } from
 
 export type AttractionType =
     {
-        id?: number,
+        id?: string,
         name: string;
         description: string;
         location: string;
-        audioFile: File | null;
+        audioFile: string | null;
     }
 
 export type ReviewType =
     {
-        id?: number,
+        id?: string,
         author: string;
         text: string;
     }
@@ -75,6 +75,16 @@ export async function addReview(attraction: AttractionType, text: string): Promi
         return returnResponseWithDefaultError(response.data, "Problema la adaugarea recenziei")
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Problema la adaugarea recenziei";
+        return { success: false, error: errorMessage };
+    }
+
+}
+export async function getAttractionById(id: string): Promise<ResponseType<AttractionType>> {
+    try {
+        const response = await attractionAPI.get<ResponseType<AttractionType>>(`/${id}`);
+        return returnResponseWithDefaultError(response.data, "Problema la preluarea detaliilor atractiei")
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Problema la preluarea detaliilor atractiei";
         return { success: false, error: errorMessage };
     }
 }
