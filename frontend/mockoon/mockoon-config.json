@@ -789,6 +789,62 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "5f1fe9fe-2ffa-45b2-b3e4-e5df13e4e190",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/notifications/stream",
+      "responses": [
+        {
+          "uuid": "69ee380c-a7d0-4305-af67-3b9f2f679897",
+          "body": "data: {\"id_atractie\": {{int 1 100}}, \"message\": \"{{faker 'lorem.sentence'}}\"}\n\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/event-stream"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "OPTIONS,GET"
+            },
+            {
+              "key": "Access-Control-Allow-Credentials",
+              "value": "true"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -834,6 +890,10 @@
     {
       "type": "route",
       "uuid": "121b202b-e000-4170-a401-e2eb41e8aa18"
+    },
+    {
+      "type": "route",
+      "uuid": "5f1fe9fe-2ffa-45b2-b3e4-e5df13e4e190"
     }
   ],
   "folders": [],
