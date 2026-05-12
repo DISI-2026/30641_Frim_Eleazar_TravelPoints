@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router-dom'
 
-import { Container, Nav, Navbar, Button, NavDropdown } from 'react-bootstrap'
+import { Container, Nav, Navbar, Button } from 'react-bootstrap'
 import './Layout.css'
 import { useLogin } from '../context/AuthContext'
+import Notifications from '../components/Notifications'
 
 export default function Layout() {
     const { isLoggedIn, logoutFn } = useLogin()
@@ -19,13 +20,7 @@ export default function Layout() {
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
                             <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
                             <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
-                            <NavDropdown title="Discover" id="discover-dropdown" className='fw-bold'>
-                                <NavDropdown.Item href="/destinations/paris">Paris</NavDropdown.Item>
-                                <NavDropdown.Item href="/destinations/tokyo">Tokyo</NavDropdown.Item>
-                                <NavDropdown.Item href="/destinations/bali">Bali</NavDropdown.Item>
-                                <NavDropdown.Item href="/destinations/dubai">Dubai</NavDropdown.Item>
-                                <NavDropdown.Item href="/destinations/newyork">New York</NavDropdown.Item>
-                            </NavDropdown>
+                            <Notifications />
 
                             {
                                 isLoggedIn ?
