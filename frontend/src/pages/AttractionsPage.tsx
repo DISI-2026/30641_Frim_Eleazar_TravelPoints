@@ -1,4 +1,4 @@
-import { Button, Card, Container, Form, ListGroup, Modal, Spinner } from "react-bootstrap";
+import { Button, ButtonGroup, Card, Container, Form, ListGroup, Modal, Spinner, ToggleButton } from "react-bootstrap";
 import { deleteAttraction, getAttractions, updateAttraction, type AttractionType } from '../API/attraction_api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from "react";
@@ -7,6 +7,28 @@ import './AttractionsPage.css'
 import { addWishlist, getWishlists, removeWishlist } from "../API/wishlist_api";
 import { FaExternalLinkAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useLogin } from "../context/AuthContext";
+import { getAnalyticsPopularity } from "../API/analytics_api";
+import { Bar, Pie } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () => void; onConfirm: () => void }) => (
     <Modal show={show} onHide={onHide} centered>
@@ -40,6 +62,7 @@ export default function AttractionsPage() {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attractionToEdit, setAttractionToEdit] = useState<AttractionType | null>(null);
     const [attractionFilter, setAttractionFilter] = useState<AttractionFilter>({ location: undefined, name: "" });
+    const [isPopularityPieChart, setIsPopularityPieChart] = useState(true)
 
     const { data: attractions, isError, error, isLoading } = useQuery({
         queryKey: ["attractions"],
@@ -176,6 +199,24 @@ export default function AttractionsPage() {
                 </Form.Group>
             </Form>
 
+            <ButtonGroup>
+                {[true, false].map((radio, idx) => (
+                    <ToggleButton
+                        key={idx}
+                        id={`radio-${idx}`}
+                        type="radio"
+                        variant={idx % 2 ? 'outline-primary' : 'outline-success'}
+                        name="radio"
+                        value={radio ? "Pie" : "Chart"}
+                        checked={isPopularityPieChart === radio}
+                        onChange={(e) => setIsPopularityPieChart(e.currentTarget.value == "Pie")}
+                    >
+                        {radio ? "Pie" : "Chart"}
+                    </ToggleButton>
+                ))}
+            </ButtonGroup>
+            <PopularityChart is_pie={isPopularityPieChart} />
+
             <ListGroup>
                 {attractions.filter((att) => {
                     return (
@@ -223,4 +264,98 @@ export default function AttractionsPage() {
             </ListGroup>
         </Container >
     );
+}
+
+function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
+    const { isLoggedIn } = useLogin()
+
+    const { data: popularity, isError: isPopularityError, error: popularityError, isLoading: isPopularityLoading } = useQuery({
+        queryKey: ["popularity"],
+        queryFn: () => getAnalyticsPopularity().then(res => {
+            if (res.success === false) {
+                throw new Error(res.error)
+            }
+            return res.data
+        }),
+        enabled: isLoggedIn
+    })
+
+    if (!isLoggedIn) return undefined
+
+    if (isPopularityLoading)
+        return <>
+            Incarcare detalii popularitate <Spinner />
+        </>
+
+    if (isPopularityError)
+        return <p>Eroare la gasirea popularitatii atractiilor: {popularityError.message}</p>
+
+    if (!popularity)
+        return <p>Eroare la gasirea popularitatii atractiilor</p>
+
+    if (is_pie)
+        return (<div style={{ marginTop: '20px', width: '50%' }}>
+            <Pie options={{
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom' as const,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Popularitatea atractiilor',
+                    },
+                },
+            }}
+                data={{
+                    labels: popularity.map((item) => item.name),
+                    datasets: [
+                        {
+                            label: 'Vizite',
+                            data: popularity.map((item) => item.views),
+                            borderWidth: 1,
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(153, 102, 255, 0.8)',
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(153, 102, 255, 1)',
+                            ],
+                        },
+                    ],
+                }}
+            /> </div>)
+
+    return (
+        <Bar options={{
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom' as const,
+                },
+                title: {
+                    display: true,
+                    text: 'Popularitatea atractiilor',
+                },
+            },
+        }}
+            data={{
+                labels: popularity.map((item) => item.name),
+                datasets: [
+                    {
+                        label: 'Vizite',
+                        data: popularity.map((item) => item.views),
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                    },
+                ],
+            }}
+        />
+    )
 }

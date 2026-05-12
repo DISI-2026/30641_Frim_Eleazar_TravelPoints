@@ -7,7 +7,7 @@
     {
       "uuid": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
       "method": "post",
-      "endpoint": "/auth/register",
+      "endpoint": "api/auth/register",
       "responses": [
         {
           "uuid": "6c4853dc-4e7d-4313-8954-6a30f5ec006b",
@@ -135,7 +135,7 @@
     {
       "uuid": "1a2b3c4d-e5f6-3a8b-9c0d-1e2f3a4b5c5f",
       "method": "post",
-      "endpoint": "/auth/login",
+      "endpoint": "api/auth/login",
       "responses": [
         {
           "uuid": "435f2d18-bd1c-4db5-9c1f-6a7e07da54c2",
@@ -845,6 +845,102 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "f454fb6b-2436-4b57-abf4-572139a135f2",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/attractions/:id",
+      "responses": [
+        {
+          "uuid": "0c94dd0f-df14-4b4f-a894-48d3a7c350db",
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"1\",\n    \"name\": \"Eiffel Tower\",\n    \"location\": \"France\",\n    \"category\": \"Attractions\",\n    \"description\": \"Turn fain\",\n    \"price\": 0,\n    \"offers\": \"ad\",\n    \"audioFile\": \"audioooo\",\n    \"imageUrls\": [\n      \"imagineeee\"\n    ],\n    \"views\": 0\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Detalii atractie",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Allow-Methods",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "295bf4ee-e82d-49dc-b993-fb6aa7e32aed",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/analytics/popular",
+      "responses": [
+        {
+          "uuid": "7714a023-630b-4d42-90ef-aaf1091d9f7a",
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"attractionId\": \"1\",\n      \"name\": \"Castelul Bran\",\n      \"views\": 5430\n    },\n    {\n      \"attractionId\": \"2\",\n      \"name\": \"Palatul Culturii\",\n      \"views\": 4120\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return popularity",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Access-Control-Request-Method",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "Access-Control-Allow-Headers",
+              "value": ""
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "endpointPrefix": "",
@@ -894,6 +990,14 @@
     {
       "type": "route",
       "uuid": "5f1fe9fe-2ffa-45b2-b3e4-e5df13e4e190"
+    },
+    {
+      "type": "route",
+      "uuid": "f454fb6b-2436-4b57-abf4-572139a135f2"
+    },
+    {
+      "type": "route",
+      "uuid": "295bf4ee-e82d-49dc-b993-fb6aa7e32aed"
     }
   ],
   "folders": [],
