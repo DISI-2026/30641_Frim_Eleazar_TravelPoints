@@ -326,7 +326,6 @@ function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
                                 'rgba(255, 206, 86, 1)',
                                 'rgba(153, 102, 255, 1)',
                             ],
-                            borderWidth: 1,
                         },
                     ],
                 }}
