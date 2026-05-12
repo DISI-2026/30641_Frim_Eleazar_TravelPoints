@@ -19,7 +19,8 @@ public class AttractionMapper {
                 attraction.getLocation().getName(),
               //  attraction.getCategory().getId(),
                 attraction.getCategory().getName(),
-                attraction.getCreatedBy().getId()
+                attraction.getCreatedBy().getId(),
+                attraction.getOffers()
         );
     }
 }

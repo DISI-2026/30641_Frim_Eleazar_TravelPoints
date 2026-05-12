@@ -25,6 +25,8 @@ import ro.utcn.travelpoints.travelpoints_backend.analytics.service.AnalyticsServ
 import ro.utcn.travelpoints.travelpoints_backend.review.repository.ReviewRepository;
 import ro.utcn.travelpoints.travelpoints_backend.wishlist.repository.WishlistRepository;
 import ro.utcn.travelpoints.travelpoints_backend.analytics.repository.VisitRepository;
+import ro.utcn.travelpoints.travelpoints_backend.notification.service.NotificationDispatcherService;
+import java.util.Objects;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -43,6 +45,7 @@ public class AttractionService {
     private final ReviewRepository reviewRepository;
     private final WishlistRepository wishlistRepository;
     private final VisitRepository visitRepository;
+    private final NotificationDispatcherService notificationDispatcherService;
 
    @Transactional
 public AttractionResponse createAttraction(
@@ -117,6 +120,10 @@ public AttractionResponse createAttraction(
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Attraction not found with id: " + id));
 
+        // Retinem valoarea anterioara a campului "Oferte" pentru a detecta modificarea
+        String previousOffers = attraction.getOffers();
+        boolean offersChanged = false;
+
         if (request.name() != null) {
             attraction.setName(request.name());
         }
@@ -127,6 +134,12 @@ public AttractionResponse createAttraction(
 
         if (request.entryPrice() != null) {
             attraction.setEntryPrice(request.entryPrice());
+        }
+
+        // Update pentru campul "Oferte" - declanseaza evenimentul DOAR daca s-a modificat
+        if (request.offers() != null && !Objects.equals(previousOffers, request.offers())) {
+            attraction.setOffers(request.offers());
+            offersChanged = true;
         }
 
         if (request.categoryId() != null) {
@@ -173,6 +186,17 @@ public AttractionResponse createAttraction(
 
         Attraction saved = attractionRepository.save(attraction);
         log.info("Updated attraction '{}' with id {}", saved.getName(), saved.getId());
+
+        // Declanseaza notificarea SSE exclusiv daca s-a modificat campul "Oferte"
+        if (offersChanged) {
+            try {
+                notificationDispatcherService.dispatchOfferUpdate(saved);
+            } catch (Exception e) {
+                // Nu blocam request-ul daca push-ul esueaza
+                log.warn("Failed to dispatch offer-update notification for attraction {}: {}",
+                        saved.getId(), e.getMessage());
+            }
+        }
 
         return AttractionMapper.toResponse(saved);
     }

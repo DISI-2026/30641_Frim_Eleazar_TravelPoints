@@ -9,11 +9,11 @@ export function useSSE<DataType>(url: string) {
 
     const connect = useCallback(() => {
         try {
-            
+
             if (eventSourceRef.current) {
                 eventSourceRef.current.close();
             }
-            
+
             const eventSource = new EventSource(url);
             eventSourceRef.current = eventSource;
 
@@ -22,7 +22,7 @@ export function useSSE<DataType>(url: string) {
                 setIsConnected(true);
                 setError(null);
             };
-            
+
             eventSource.onmessage = (event) => {
                 try {
                     const parsedData = JSON.parse(event.data);

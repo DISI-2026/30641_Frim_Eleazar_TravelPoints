@@ -91,6 +91,11 @@ const AttractionPage = () => {
             <Card.Title>{attraction.name}</Card.Title>
             <Card.Text>{attraction.description}</Card.Text>
             <Card.Text>{attraction.location}</Card.Text>
+            {attraction.offers && (
+                <Card.Text>
+                    <strong>Oferte: </strong>{attraction.offers}
+                </Card.Text>
+            )}
             {attraction.audioFile && (
                 <audio
                     controls

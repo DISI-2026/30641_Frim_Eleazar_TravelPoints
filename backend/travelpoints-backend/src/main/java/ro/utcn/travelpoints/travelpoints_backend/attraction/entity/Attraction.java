@@ -41,6 +41,9 @@ public class Attraction {
     @Column(name = "entry_price", precision = 10, scale = 2)
     private BigDecimal entryPrice;
 
+    @Column(name = "offers", columnDefinition = "TEXT")
+    private String offers;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
