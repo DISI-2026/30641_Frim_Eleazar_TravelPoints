@@ -499,11 +499,6 @@ paths:
             type: string
             enum: [hour, month]
             default: hour
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Time-series traffic data
@@ -574,6 +569,7 @@ paths:
               schema:
                 type: string
                 description: Event payload containing the notification
+              example: 'data: {"id_atractie": 584848, "message": "Test"}'
 
   /api/proximity:
     get:
