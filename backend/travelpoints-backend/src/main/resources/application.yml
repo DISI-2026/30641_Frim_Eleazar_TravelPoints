@@ -2,8 +2,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: Reddington.Raymond@gmail.com //gmailul
-    password: TomK eenI sLiz Dady //vizitezi https://myaccount.google.com/apppasswords si iti creezi propria parola de aplicatie pentru a putea folosi serviciul de mail al gmailului
+    username: Reddington.Raymond@gmail.com #gmailul
+    password: TomK eenI sLiz Dady #vizitezi https://myaccount.google.com/apppasswords si iti creezi propria parola de aplicatie pentru a putea folosi serviciul de mail al gmailului
     properties:
       mail:
         smtp:

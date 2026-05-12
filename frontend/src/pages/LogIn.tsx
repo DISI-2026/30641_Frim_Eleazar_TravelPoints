@@ -91,6 +91,9 @@ export default function LogIn() {
                     <p className='login-footer'>
                         Nu ai cont? <a href="/register" className='login-link'>Creeaza-l acum</a>
                     </p>
+                    <p className='login-footer'>
+                        Ai uitat parola? <a href="/forgot-password" className='login-link'>Reseteaza acum</a>
+                    </p>
                 </div>
             </div>
         </div>
