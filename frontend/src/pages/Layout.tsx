@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 
-import { Container, Nav, Navbar, Button, NavDropdown } from 'react-bootstrap'
+import { Container, Nav, Navbar, Button } from 'react-bootstrap'
 import './Layout.css'
 import { useLogin } from '../context/AuthContext'
 import Notifications from '../components/Notifications'
@@ -20,9 +20,7 @@ export default function Layout() {
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
                             <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
                             <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
-                            <NavDropdown title="Notificari" id="notificari-dropdown" className='fw-bold'>
-                                <Notifications />
-                            </NavDropdown>
+                            <Notifications />
 
                             {
                                 isLoggedIn ?

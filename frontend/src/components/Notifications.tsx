@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { notifications_endpoint } from "../API/base_api";
 import { useSSE } from "../hooks/useSSE";
-import { Button, NavDropdown } from "react-bootstrap";
+import { NavDropdown } from "react-bootstrap";
 
 type Notification = {
     message: string;
@@ -16,7 +16,7 @@ data: {"id": 1, "message": "Felicitari! Ai castigat o noua oferta! Da-ne cardul 
 */
 
 function Notifications() {
-    const { data, error, isConnected } = useSSE<string>(notifications_endpoint)
+    const { data, error } = useSSE<string>(notifications_endpoint)
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     useEffect(() => {
@@ -54,7 +54,14 @@ function Notifications() {
     };
 
     return (
-        <>
+        <NavDropdown title={
+            <>
+                Notificari
+                {notifications.length > 0 &&
+                    <span className="badge bg-danger mx-2">{notifications.length}</span>
+                }
+            </>
+        } id="notificari-dropdown" className='fw-bold'>
             {error &&
                 <>
                     <NavDropdown.Item>Error: {error}</NavDropdown.Item>
@@ -77,7 +84,7 @@ function Notifications() {
                         {/* </ul> */}
                     </>
             }
-        </>
+        </NavDropdown>
     )
 }
 
