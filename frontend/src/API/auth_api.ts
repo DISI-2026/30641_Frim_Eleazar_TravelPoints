@@ -30,3 +30,21 @@ export async function loginUser(data: RegisterLoginRequestType): Promise<TokenRe
 export async function logoutUser() {
     removeAuthToken()
 }
+
+export async function forgotPassword(email: string): Promise<ResponseType> {
+    try {
+        const response = await authAPI.post<ResponseType>(`/forgot-password?email=${email}`);
+        return returnResponseWithDefaultError(response.data, "Eroare la trimiterea emailului");
+    } catch (err) {
+        return { success: false, error: "Eroare la trimiterea emailului" };
+    }
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<ResponseType> {
+    try {
+        const response = await authAPI.post<ResponseType>(`/reset-password?token=${token}&newPassword=${newPassword}`);
+        return returnResponseWithDefaultError(response.data, "Eroare la resetarea parolei");
+    } catch (err) {
+        return { success: false, error: "Eroare la resetarea parolei" };
+    }
+}

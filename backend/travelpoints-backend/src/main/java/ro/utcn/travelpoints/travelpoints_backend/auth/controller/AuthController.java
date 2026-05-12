@@ -51,4 +51,27 @@ public class AuthController {
                 .header("Authorization", "Bearer " + token)
                 .body(RegisterResponse.ok());
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse<Void>> forgotPassword(@org.springframework.web.bind.annotation.RequestParam("email") String email) {
+        try {
+            authService.createPasswordResetTokenForUser(email);
+        } catch (Exception e) {
+            // Returnam 200 OK chiar daca email-ul nu exista
+        }
+        return ResponseEntity.ok(ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse.success());
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse<Void>> resetPassword(
+            @org.springframework.web.bind.annotation.RequestParam("token") String token,
+            @org.springframework.web.bind.annotation.RequestParam("newPassword") String newPassword) {
+        try {
+            authService.resetPassword(token, newPassword);
+            return ResponseEntity.ok(ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse.success());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ro.utcn.travelpoints.travelpoints_backend.common.dto.ApiResponse.error(e.getMessage()));
+        }
+    }
+
 }

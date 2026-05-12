@@ -29,4 +29,14 @@ public class EmailService {
         mailSender.send(mailMessage);
         log.info("Email trimis catre admin de la {}", touristEmail);
     }
+
+    public void sendPasswordResetEmail(String to, String token) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(to);
+        mailMessage.setSubject("Resetare parola TravelPoints");
+        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
+        mailMessage.setText("Acceseaza acest link pentru a-ti reseta parola: \n" + resetUrl);
+        mailSender.send(mailMessage);
+    }
+
 }
