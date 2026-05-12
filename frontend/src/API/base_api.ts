@@ -10,11 +10,17 @@ const auth_endpoint = location + (import.meta.env.VITE_AUTH_API || "/auth")
 const attraction_endpoint = location + (import.meta.env.VITE_ATTRACTION_API || "/attraction")
 const wishlist_endpoint = location + (import.meta.env.VITE_WISHLIST_API || "/wishlist")
 const analytics_endpoint = location + (import.meta.env.VITE_ANALYTICS_API || "/analytics")
+const contact_endpoint = location + (import.meta.env.VITE_CONTACT_API || "/contact")
+
+
 
 export const authAPI = axios.create({ baseURL: auth_endpoint })
 export const attractionAPI = axios.create({ baseURL: attraction_endpoint })
 export const wishlistAPI = axios.create({ baseURL: wishlist_endpoint })
 export const analyticsAPI = axios.create({ baseURL: analytics_endpoint })
+
+export const contactAPI = axios.create({ baseURL: contact_endpoint })
+contactAPI.interceptors.request.use(requestInterceptor)
 
 export type ResponseType<D extends object | undefined = undefined> = 
     | (D extends undefined 
