@@ -799,7 +799,7 @@
       "responses": [
         {
           "uuid": "69ee380c-a7d0-4305-af67-3b9f2f679897",
-          "body": "data: \"{{faker 'lorem.sentence'}}\"\n\n",
+          "body": "data: {\"id_atractie\": {{int 1 100}}, \"message\": \"{{faker 'lorem.sentence'}}\"}\n\n",
           "latency": 0,
           "statusCode": 200,
           "label": "",

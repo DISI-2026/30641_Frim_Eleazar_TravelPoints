@@ -5,25 +5,23 @@ import { NavDropdown } from "react-bootstrap";
 
 type Notification = {
     message: string;
+    id_atractie: number;
 }
 
-/* Exemp[le]
+/* Exemplu
 
-data: {"id": {{int 1 10000}}, "message": "{{faker 'lorem.sentence'}}"}
+data: {"id_atractie": {{int 1 100}}, "message": "{{faker 'lorem.sentence'}}"}
 
-data: {"id": 1, "message": "Felicitari! Ai castigat o noua oferta! Da-ne cardul tau de credit"}
 
 */
 
 function Notifications() {
-    const { data, error } = useSSE<string>(notifications_endpoint)
+    const { data, error } = useSSE<Notification>(notifications_endpoint)
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     useEffect(() => {
         if (data) {
-            console.log(data)
-
-            const newNotification: Notification = { message: data }
+            const newNotification: Notification = data
 
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setNotifications([newNotification, ...notifications]);
@@ -75,13 +73,11 @@ function Notifications() {
                     <>
                         <NavDropdown.Item as="button" onClick={clearAllNotifications} className="btn btn-secondary mb-3">Sterge toate notificarile</NavDropdown.Item>
                         <NavDropdown.Divider />
-                        {/* <ul className="list-group"> */}
                         {notifications.map((notification, index) => (
-                            <NavDropdown.Item key={index}>
+                            <NavDropdown.Item href={`/attraction/${notification.id_atractie}`} key={index}>
                                 {notification.message}
                             </NavDropdown.Item>
                         ))}
-                        {/* </ul> */}
                     </>
             }
         </NavDropdown>
