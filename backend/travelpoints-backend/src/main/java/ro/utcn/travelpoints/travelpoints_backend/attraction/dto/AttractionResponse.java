@@ -12,7 +12,7 @@ public record AttractionResponse(
         //UUID locationId,
         String location,
       //  UUID categoryId,
-        String categoryName,
+        String category,
         UUID createdBy,
         String offers
 ) {

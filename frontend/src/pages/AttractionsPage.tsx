@@ -49,20 +49,22 @@ const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () =>
     </Modal>
 );
 
-type LocationFilterType = "Italia" | "Romania" | "Franta" | "Spania" | undefined
 type AttractionFilter = {
-    location: LocationFilterType,
-    name: string
+    location: string,
+    name: string,
+    category: string
 }
 
 
 export default function AttractionsPage() {
-    const { isLoggedIn } = useLogin()
+    const { isLoggedIn,role } = useLogin()
     const queryClient = useQueryClient();
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attractionToEdit, setAttractionToEdit] = useState<AttractionType | null>(null);
-    const [attractionFilter, setAttractionFilter] = useState<AttractionFilter>({ location: undefined, name: "" });
+    const [attractionFilter, setAttractionFilter] = useState<AttractionFilter>({ location: "", name: "", category: "" });
     const [isPopularityPieChart, setIsPopularityPieChart] = useState(true)
+
+
 
     const { data: attractions, isError, error, isLoading } = useQuery({
         queryKey: ["attractions"],
@@ -73,6 +75,8 @@ export default function AttractionsPage() {
             return res.data
         })
     });
+    const uniqueLocations = Array.from(new Set(attractions?.map(a => a.location))).filter(Boolean);
+    const uniqueCategories = Array.from(new Set(attractions?.map(a => a.category))).filter(Boolean);
 
     const { data: wishlists, error: wishlistError, isError: isWishlistError, isLoading: isWishlistLoading } = useQuery({
         queryKey: ["wishlists"],
@@ -86,21 +90,26 @@ export default function AttractionsPage() {
         enabled: isLoggedIn
     })
 
-    if (attractions === undefined) {
-        return (
-            <h2>Nu am gasit atractii</h2>
-        )
-    }
-
-    if (isError) {
-        return (
-            <h2>{error.message}</h2>
-        )
-    }
-
+    // Afisam spinner-ul cat timp se incarca datele
     if (isLoading || (isLoggedIn && isWishlistLoading)) {
         return (
-            <Spinner />
+            <div className="text-center mt-5">
+                <Spinner animation="border" />
+            </div>
+        )
+    }
+
+    // Apoi verificam daca a aparut o eroare de la server
+    if (isError) {
+        return (
+            <h2>Eroare: {error.message}</h2>
+        )
+    }
+
+    // La final, daca incarcarea a terminat dar lista tot e goala
+    if (attractions === undefined || attractions.length === 0) {
+        return (
+            <h2>Nu am gasit atractii</h2>
         )
     }
 
@@ -170,59 +179,66 @@ export default function AttractionsPage() {
 
             {isWishlistError && <h2>{wishlistError instanceof Error ? wishlistError.message : "Eroare la incarcarea wishlists"}</h2>}
 
-            <Form>
-                <Form.Group className="mb-3" controlId="attractionName">
-                    <Form.Label>Caută după nume</Form.Label>
+            <Form className="row mb-4">
+                <Form.Group className="col-md-4 mb-3" controlId="attractionName">
+                    <Form.Label>Cauta dupa nume</Form.Label>
                     <Form.Control type="text" placeholder="Numele atractiei"
-                        defaultValue={attractionFilter.name}
-                        onChange={(e) => {
-                            setAttractionFilter({ ...attractionFilter, name: e.target.value })
-                        }}
+                        value={attractionFilter.name}
+                        onChange={(e) => setAttractionFilter({ ...attractionFilter, name: e.target.value })}
                     />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="location">
-                    <Form.Label>Filtrează după locație</Form.Label>
-                    <Form.Select aria-label="Default select example"
-                        defaultValue={attractionFilter.location}
-                        onChange={(e) => {
-                            const val = e.target.value as LocationFilterType
-                            setAttractionFilter({ ...attractionFilter, location: val })
-                        }}
+                <Form.Group className="col-md-4 mb-3" controlId="location">
+                    <Form.Label>Filtreaza dupa locatie</Form.Label>
+                    <Form.Select
+                        value={attractionFilter.location}
+                        onChange={(e) => setAttractionFilter({ ...attractionFilter, location: e.target.value })}
                     >
-                        <option value="">Selectează o locație</option>
-                        <option value="Italia">Italia</option>
-                        <option value="Romania">Romania</option>
-                        <option value="Franta">Franta</option>
-                        <option value="Spania">Spania</option>
+                        <option value="">Toate locatiile</option>
+                        {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                    </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="col-md-4 mb-3" controlId="category">
+                    <Form.Label>Filtreaza dupa categorie</Form.Label>
+                    <Form.Select
+                        value={attractionFilter.category}
+                        onChange={(e) => setAttractionFilter({ ...attractionFilter, category: e.target.value })}
+                    >
+                        <option value="">Toate categoriile</option>
+                        {uniqueCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </Form.Select>
                 </Form.Group>
             </Form>
 
-            <ButtonGroup>
-                {[true, false].map((radio, idx) => (
-                    <ToggleButton
-                        key={idx}
-                        id={`radio-${idx}`}
-                        type="radio"
-                        variant={idx % 2 ? 'outline-primary' : 'outline-success'}
-                        name="radio"
-                        value={radio ? "Pie" : "Chart"}
-                        checked={isPopularityPieChart === radio}
-                        onChange={(e) => setIsPopularityPieChart(e.currentTarget.value == "Pie")}
-                    >
-                        {radio ? "Pie" : "Chart"}
-                    </ToggleButton>
-                ))}
-            </ButtonGroup>
-            <PopularityChart is_pie={isPopularityPieChart} />
+            {role === 'ROLE_ADMIN' && (
+                <>
+                    <ButtonGroup>
+                        {[true, false].map((radio, idx) => (
+                            <ToggleButton
+                                key={idx}
+                                id={`radio-${idx}`}
+                                type="radio"
+                                variant={idx % 2 ? 'outline-primary' : 'outline-success'}
+                                name="radio"
+                                value={radio ? "Pie" : "Chart"}
+                                checked={isPopularityPieChart === radio}
+                                onChange={(e) => setIsPopularityPieChart(e.currentTarget.value == "Pie")}
+                            >
+                                {radio ? "Pie" : "Chart"}
+                            </ToggleButton>
+                        ))}
+                    </ButtonGroup>
+                    <PopularityChart is_pie={isPopularityPieChart} />
+                </>
+            )}
 
             <ListGroup>
                 {attractions.filter((att) => {
-                    return (
-                        (attractionFilter.name ? att.name.toLowerCase().includes(attractionFilter.name.toLowerCase()) : true) &&
-                        (attractionFilter.location ? att.location === attractionFilter.location : true)
-                    );
+                    const matchName = attractionFilter.name ? att.name.toLowerCase().includes(attractionFilter.name.toLowerCase()) : true;
+                    const matchLocation = attractionFilter.location ? att.location === attractionFilter.location : true;
+                    const matchCategory = attractionFilter.category ? att.category === attractionFilter.category : true;
+                    return matchName && matchLocation && matchCategory;
                 }).map((attraction, index) => (
                     <ListGroup.Item key={index}>
                         <Card>
@@ -267,7 +283,7 @@ export default function AttractionsPage() {
 }
 
 function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
-    const { isLoggedIn } = useLogin()
+    const { isLoggedIn,role } = useLogin()
 
     const { data: popularity, isError: isPopularityError, error: popularityError, isLoading: isPopularityLoading } = useQuery({
         queryKey: ["popularity"],
@@ -277,10 +293,10 @@ function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
             }
             return res.data
         }),
-        enabled: isLoggedIn
+        enabled: isLoggedIn&& role === 'ROLE_ADMIN'
     })
 
-    if (!isLoggedIn) return undefined
+    if (!isLoggedIn|| role !== 'ROLE_ADMIN') return undefined
 
     if (isPopularityLoading)
         return <>

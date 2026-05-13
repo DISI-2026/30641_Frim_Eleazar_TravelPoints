@@ -22,9 +22,10 @@ export default function LogIn() {
         if (response !== true)
         {
             alert(response)
+            return
         }
 
-        navigate("/login")
+        navigate("/attractions")
     }
 
     return (

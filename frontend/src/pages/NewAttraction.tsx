@@ -14,6 +14,7 @@ export function AttractionForm({ isEditing, initialValues = {
     name: "",
     description: "",
     location: "",
+    category: "",
     audioFile: null,
     offers: "",
 }, onSubmitFunc }: { isEditing?: boolean, initialValues?: AttractionType, onSubmitFunc: (values: AttractionType) => (Promise<void> | void) }) {
@@ -27,6 +28,8 @@ export function AttractionForm({ isEditing, initialValues = {
             .required("Va rugam introduceti descrierea"),
         location: Yup.string()
             .required("Va rugam introduceti locatia"),
+        category: Yup.string()
+            .required("Va rugam introduceti categoria"),
         audioFile: Yup.mixed<File>()
             .test('is-required', 'Va rugam selectati un fisier audio', (value) => {
                 // Daca adaugam o atractie noua, fisierul este obligatoriu
@@ -114,6 +117,23 @@ export function AttractionForm({ isEditing, initialValues = {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Categorie</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="category"
+                                placeholder="Categoria atractiei (ex: Muzeu, Parc, Monument)"
+                                value={values.category}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.category && !!errors.category}
+                                className="form-input"
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.category}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
                             <Form.Label className="form-label">Oferte</Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -173,11 +193,10 @@ export default function NewAttraction() {
         const response = await createAttraction(values)
         if (!response.success) {
             alert(response.error)
-            // window.location.reload(); 
             return
         }
 
-        navigate('/')
+        navigate('/attractions')
     };
 
     return (
