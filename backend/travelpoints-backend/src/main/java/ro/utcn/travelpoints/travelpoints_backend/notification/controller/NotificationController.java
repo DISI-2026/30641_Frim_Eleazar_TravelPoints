@@ -2,6 +2,7 @@ package ro.utcn.travelpoints.travelpoints_backend.notification.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,13 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.springframework.http.HttpStatus;
 
 import ro.utcn.travelpoints.travelpoints_backend.auth.security.JwtService;
-import ro.utcn.travelpoints.travelpoints_backend.common.exception.ResourceNotFoundException;
 import ro.utcn.travelpoints.travelpoints_backend.notification.service.NotificationDispatcherService;
-import ro.utcn.travelpoints.travelpoints_backend.user.entity.User;
-import ro.utcn.travelpoints.travelpoints_backend.user.repository.UserRepository;
 
 @RestController
 @RequestMapping("/notifications")
@@ -27,13 +24,15 @@ public class NotificationController {
 
     private final NotificationDispatcherService notificationDispatcherService;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
 
     /**
      * Endpoint SSE pentru notificari in timp real.
      * Clientul se conecteaza prin EventSource (care nu suporta headere custom),
      * de aceea acceptam JWT-ul si ca query param (?token=...).
-     * Daca exista un Authentication deja stabilit (header Authorization), il folosim direct.
+     *
+     * NOTA: NU facem niciun acces la baza de date aici - identitatea utilizatorului este
+     * extrasa direct din JWT. In felul asta evitam ca SSE-ul (cu lifetime de 30 min) sa
+     * tina conexiuni JDBC blocate in connection pool.
      */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream(@RequestParam(value = "token", required = false) String token) {
@@ -42,11 +41,8 @@ public class NotificationController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required for SSE stream");
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
-
         log.info("Opening SSE stream for user {}", email);
-        return notificationDispatcherService.register(user.getId());
+        return notificationDispatcherService.register(email);
     }
 
     private String resolveUserEmail(String token) {

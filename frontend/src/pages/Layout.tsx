@@ -6,7 +6,8 @@ import { useLogin } from '../context/AuthContext'
 import Notifications from '../components/Notifications'
 
 export default function Layout() {
-    const { isLoggedIn, logoutFn } = useLogin()
+    const { isLoggedIn, role, logoutFn } = useLogin()
+    const isAdmin = role === 'ROLE_ADMIN'
     return (
         <>
             <Navbar bg='light' expand='lg' sticky='top' className='navbar-custom'>
@@ -19,7 +20,9 @@ export default function Layout() {
                         <Nav className="ms-auto align-items-center gap-3">
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
                             <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
-                            <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
+                            {isAdmin && (
+                                <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
+                            )}
                             {isLoggedIn && <Notifications />}
 
                             {

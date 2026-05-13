@@ -91,6 +91,11 @@ const AttractionPage = () => {
             <Card.Title>{attraction.name}</Card.Title>
             <Card.Text>{attraction.description}</Card.Text>
             <Card.Text>{attraction.location}</Card.Text>
+            {attraction.entryPrice !== undefined && attraction.entryPrice !== null && (
+                <Card.Text>
+                    <strong>Pret intrare: </strong>{attraction.entryPrice} RON
+                </Card.Text>
+            )}
             {attraction.offers && (
                 <Card.Text>
                     <strong>Oferte: </strong>{attraction.offers}

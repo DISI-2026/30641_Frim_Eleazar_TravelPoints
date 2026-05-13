@@ -1,9 +1,10 @@
 import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import './NewAttraction.css';
 import { createAttraction, type AttractionType } from "../API/attraction_api";
+import { useLogin } from "../context/AuthContext";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav', 'audio/x-wav', "audio/vnd.wave"];
@@ -17,6 +18,7 @@ export function AttractionForm({ isEditing, initialValues = {
     category: "",
     audioFile: null,
     offers: "",
+    entryPrice: undefined,
 }, onSubmitFunc }: { isEditing?: boolean, initialValues?: AttractionType, onSubmitFunc: (values: AttractionType) => (Promise<void> | void) }) {
 
 
@@ -30,6 +32,10 @@ export function AttractionForm({ isEditing, initialValues = {
             .required("Va rugam introduceti locatia"),
         category: Yup.string()
             .required("Va rugam introduceti categoria"),
+        entryPrice: Yup.number()
+            .typeError("Pretul trebuie sa fie un numar")
+            .min(0, "Pretul nu poate fi negativ")
+            .nullable(),
         audioFile: Yup.mixed<File>()
             .test('is-required', 'Va rugam selectati un fisier audio', (value) => {
                 // Daca adaugam o atractie noua, fisierul este obligatoriu
@@ -134,6 +140,25 @@ export function AttractionForm({ isEditing, initialValues = {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Pret intrare (RON)</Form.Label>
+                            <Form.Control
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="entryPrice"
+                                placeholder="Pretul biletului de intrare (ex: 25)"
+                                value={values.entryPrice ?? ""}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.entryPrice && !!errors.entryPrice}
+                                className="form-input"
+                            />
+                            <Form.Control.Feedback type="invalid" className="error-text">
+                                {errors.entryPrice}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
                             <Form.Label className="form-label">Oferte</Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -179,6 +204,12 @@ export function AttractionForm({ isEditing, initialValues = {
 
 export default function NewAttraction() {
     const navigate = useNavigate();
+    const { role } = useLogin();
+
+    // Pagina de creare atractie e accesibila exclusiv administratorilor
+    if (role !== 'ROLE_ADMIN') {
+        return <Navigate to="/noaccess" replace />;
+    }
 
     const onSubmitHandler = async (values: AttractionType) => {
         console.log("Form Values:", {

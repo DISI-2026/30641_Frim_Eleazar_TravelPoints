@@ -175,7 +175,9 @@ export default function AttractionsPage() {
             }
 
             <h1>Atracții</h1>
-            <Button className="btn-orange btn-slim" href="/newattraction">Creeza o noua atractie</Button>
+            {role === 'ROLE_ADMIN' && (
+                <Button className="btn-orange btn-slim" href="/newattraction">Creeza o noua atractie</Button>
+            )}
 
             {isWishlistError && <h2>{wishlistError instanceof Error ? wishlistError.message : "Eroare la incarcarea wishlists"}</h2>}
 
@@ -250,17 +252,26 @@ export default function AttractionsPage() {
                                 </Card.Title>
                                 <Card.Text>{attraction.description}</Card.Text>
                                 <Card.Text>{attraction.location}</Card.Text>
+                                {attraction.entryPrice !== undefined && attraction.entryPrice !== null && (
+                                    <Card.Text>
+                                        <strong>Pret: </strong>{attraction.entryPrice} RON
+                                    </Card.Text>
+                                )}
+                                {attraction.offers && (
+                                    <Card.Text>
+                                        <strong>Oferte: </strong>{attraction.offers}
+                                    </Card.Text>
+                                )}
 
 
-                                <Button variant="text" className="btn-orange mx-3 py-2 rounded-pill" onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
-                                <Button variant="danger" className="btn-slim" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
+                                {role === 'ROLE_ADMIN' && (
+                                    <>
+                                        <Button variant="text" className="btn-orange mx-3 py-2 rounded-pill" onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
+                                        <Button variant="danger" className="btn-slim" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
+                                    </>
+                                )}
 
-                                {(wishlists === undefined || isLoggedIn == false) ?
-                                    <Button href="/login" variant="text" className="btn-glow btn-slim p-2 rounded-5 py-1 m-2">
-                                        <FaRegHeart />
-                                    </Button>
-                                    :
-                                    (
+                                {role === 'ROLE_TOURIST' && isLoggedIn && wishlists !== undefined && (
                                         <Button
                                             onClick={() => toggleWishlist(String(attraction.id))}
                                             variant="text"
