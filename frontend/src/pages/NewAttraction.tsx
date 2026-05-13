@@ -15,6 +15,7 @@ export function AttractionForm({ isEditing, initialValues = {
     description: "",
     location: "",
     audioFile: null,
+    offers: "",
 }, onSubmitFunc }: { isEditing?: boolean, initialValues?: AttractionType, onSubmitFunc: (values: AttractionType) => (Promise<void> | void) }) {
 
 
@@ -110,6 +111,20 @@ export function AttractionForm({ isEditing, initialValues = {
                             <Form.Control.Feedback type="invalid" className="error-text">
                                 {errors.location}
                             </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label className="form-label">Oferte</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                name="offers"
+                                placeholder="Oferte speciale (ex: 20% reducere weekend, intrare gratuita pentru copii sub 7 ani)"
+                                value={values.offers ?? ""}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="form-input"
+                            />
                         </Form.Group>
 
                         <Form.Group className="mb-3">

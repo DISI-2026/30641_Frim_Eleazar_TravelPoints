@@ -52,10 +52,11 @@ public class AttractionController {
             @RequestParam(value = "locationId", required = false) UUID locationId,
             @RequestParam(value = "categoryId", required = false) UUID categoryId,
             @RequestParam(value = "location", required = false) String locationName,
+            @RequestParam(value = "offers", required = false) String offers,
             @RequestParam(value = "audioFile", required = false) org.springframework.web.multipart.MultipartFile audioFile
     ) {
         UpdateAttractionRequest request = new UpdateAttractionRequest(
-                name, descriptionText, entryPrice, locationId, categoryId
+                name, descriptionText, entryPrice, locationId, categoryId, offers
         );
 
         // Pasam 'locationName' si 'audioFile' catre serviciu

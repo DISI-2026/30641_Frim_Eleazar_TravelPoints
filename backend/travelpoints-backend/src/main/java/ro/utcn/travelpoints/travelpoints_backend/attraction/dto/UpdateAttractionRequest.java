@@ -18,6 +18,8 @@ public record UpdateAttractionRequest(
 
         UUID locationId,
 
-        UUID categoryId
+        UUID categoryId,
+
+        String offers
 ) {
 }

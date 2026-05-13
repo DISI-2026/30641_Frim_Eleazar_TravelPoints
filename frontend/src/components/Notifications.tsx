@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { notifications_endpoint } from "../API/base_api";
+import { loadAuthToken, notifications_endpoint } from "../API/base_api";
 import { useSSE } from "../hooks/useSSE";
 import { NavDropdown } from "react-bootstrap";
 
@@ -16,7 +16,15 @@ data: {"id_atractie": {{int 1 100}}, "message": "{{faker 'lorem.sentence'}}"}
 */
 
 function Notifications() {
-    const { data, error } = useSSE<Notification>(notifications_endpoint)
+    // EventSource nu suporta header-e custom, asa ca atasam JWT-ul ca query param.
+    // Backendul foloseste tokenul pentru a identifica utilizatorul si a filtra notificarile
+    // doar catre cei care au atractia in wishlist.
+    const token = loadAuthToken();
+    const sseUrl = token
+        ? `${notifications_endpoint}?token=${encodeURIComponent(token)}`
+        : notifications_endpoint;
+
+    const { data, error } = useSSE<Notification>(sseUrl)
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     useEffect(() => {

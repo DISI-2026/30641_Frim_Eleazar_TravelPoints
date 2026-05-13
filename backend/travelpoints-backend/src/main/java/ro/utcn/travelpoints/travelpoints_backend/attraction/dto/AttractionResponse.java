@@ -13,6 +13,7 @@ public record AttractionResponse(
         String location,
       //  UUID categoryId,
         String categoryName,
-        UUID createdBy
+        UUID createdBy,
+        String offers
 ) {
 }

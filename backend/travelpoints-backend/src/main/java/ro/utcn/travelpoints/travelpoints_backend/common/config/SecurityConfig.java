@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/audio/**").permitAll()
+                        .requestMatchers("/notifications/stream").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/*/reviews").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/attractions/*/reviews").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/attractions/search").permitAll()
