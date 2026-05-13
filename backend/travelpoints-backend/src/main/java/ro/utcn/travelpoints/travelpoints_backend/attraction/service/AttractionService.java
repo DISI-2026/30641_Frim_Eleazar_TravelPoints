@@ -53,7 +53,7 @@ public AttractionResponse createAttraction(
         String descriptionText,
         BigDecimal entryPrice,
         UUID locationId,
-        UUID categoryId,
+        String categoryName,
         String locationName,
         MultipartFile audioFile,
         String creatorEmail
@@ -77,16 +77,14 @@ public AttractionResponse createAttraction(
     }
 
     // Categoria optionala momentan, dam default dacă nu vine
-    Category category;
-    if (categoryId != null) {
-        category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Category not found with id: " + categoryId));
-    } else {
-        category = categoryRepository.findByName("Monument")
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Default category 'Monument' not found"));
-    }
+       Category categoryObj;
+       if (categoryName != null && !categoryName.isBlank()) {
+           categoryObj = categoryRepository.findByName(categoryName.trim())
+                   .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName.trim()).build()));
+       } else {
+           categoryObj = categoryRepository.findByName("Monument")
+                   .orElseThrow(() -> new ResourceNotFoundException("Default category 'Monument' not found"));
+       }
 
     User creator = userRepository.findByEmail(creatorEmail)
             .orElseThrow(() -> new ResourceNotFoundException(
@@ -103,7 +101,7 @@ public AttractionResponse createAttraction(
             .descriptionAudioUrl(audioPath)
             .entryPrice(entryPrice)
             .location(location)
-            .category(category)
+            .category(categoryObj)
             .createdBy(creator)
             .build();
 
@@ -142,11 +140,10 @@ public AttractionResponse createAttraction(
             offersChanged = true;
         }
 
-        if (request.categoryId() != null) {
-            Category category = categoryRepository.findById(request.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Category not found with id: " + request.categoryId()));
-            attraction.setCategory(category);
+        if (request.category() != null && !request.category().isBlank()) {
+            Category categoryObj = categoryRepository.findByName(request.category().trim())
+                    .orElseGet(() -> categoryRepository.save(Category.builder().name(request.category().trim()).build()));
+            attraction.setCategory(categoryObj);
         }
 
         // Gestionare Locatie (dupa nume sau dupa ID)

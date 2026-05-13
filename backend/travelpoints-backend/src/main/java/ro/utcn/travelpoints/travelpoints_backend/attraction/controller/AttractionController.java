@@ -28,18 +28,16 @@ public class AttractionController {
             @RequestParam(value = "description", required = false) String descriptionText,
             @RequestParam(value = "entryPrice", required = false) BigDecimal entryPrice,
             @RequestParam(value = "locationId", required = false) UUID locationId,
-            @RequestParam(value = "categoryId", required = false) UUID categoryId,
+            @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "location", required = false) String locationName,
             @RequestParam(value = "audioFile", required = false) MultipartFile audioFile,
             Authentication authentication
     ) {
         String creatorEmail = authentication.getName();
-
         AttractionResponse response = attractionService.createAttraction(
                 name, descriptionText, entryPrice,
-                locationId, categoryId, locationName, audioFile, creatorEmail
+                locationId, category, locationName, audioFile, creatorEmail
         );
-
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
@@ -50,16 +48,14 @@ public class AttractionController {
             @RequestParam(value = "description", required = false) String descriptionText,
             @RequestParam(value = "entryPrice", required = false) BigDecimal entryPrice,
             @RequestParam(value = "locationId", required = false) UUID locationId,
-            @RequestParam(value = "categoryId", required = false) UUID categoryId,
+            @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "location", required = false) String locationName,
             @RequestParam(value = "offers", required = false) String offers,
             @RequestParam(value = "audioFile", required = false) org.springframework.web.multipart.MultipartFile audioFile
     ) {
         UpdateAttractionRequest request = new UpdateAttractionRequest(
-                name, descriptionText, entryPrice, locationId, categoryId, offers
+                name, descriptionText, entryPrice, locationId, category, offers
         );
-
-        // Pasam 'locationName' si 'audioFile' catre serviciu
         AttractionResponse response = attractionService.updateAttraction(id, request, locationName, audioFile);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

@@ -20,7 +20,7 @@ export default function Layout() {
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
                             <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
                             <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
-                            <Notifications />
+                            {isLoggedIn && <Notifications />}
 
                             {
                                 isLoggedIn ?
