@@ -43,17 +43,23 @@
 }
 
 .btn-orange {
-    background-color: #ff6200;
+    background-color: #ff6200 !important;
     border: none;
     border-radius: 30px;
     padding: 12px 40px;
-    color: white;
+    color: white !important;
     font-weight: bold;
     font-size: 1.1rem;
 }
 
-.btn-orange:hover {
+.btn-orange:hover:not(:disabled) {
     background-color: #e64100 !important;
+}
+
+.btn-orange:disabled {
+    background-color: #ffb085 !important;
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .hero-description {

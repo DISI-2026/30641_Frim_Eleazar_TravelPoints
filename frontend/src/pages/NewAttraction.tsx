@@ -35,15 +35,11 @@ export function AttractionForm({ isEditing, initialValues = {
         entryPrice: Yup.number()
             .typeError("Pretul trebuie sa fie un numar")
             .min(0, "Pretul nu poate fi negativ")
-            .nullable(),
+            .nullable()
+            .optional(),
         audioFile: Yup.mixed<File>()
-            .test('is-required', 'Va rugam selectati un fisier audio', (value) => {
-                // Daca adaugam o atractie noua, fisierul este obligatoriu
-                if (!isEditing && !value) {
-                    return false;
-                }
-                return true;
-            })
+            .nullable()
+            .optional()
             .test('fileSize', 'Fisierul este prea mare (Max 10MB)', (value) => {
                 // Verificam dimensiunea doar daca utilizatorul incarca efectiv un fisier nou
                 if (value instanceof File) {
@@ -216,10 +212,7 @@ export default function NewAttraction() {
             name: values.name,
             description: values.description,
             location: values.location,
-            audioFile: values.audioFile,
-            fileName: values.audioFile?.name,
-            fileType: values.audioFile?.type,
-            fileSize: values.audioFile?.size
+            audioFile: values.audioFile
         });
         const response = await createAttraction(values)
         if (!response.success) {

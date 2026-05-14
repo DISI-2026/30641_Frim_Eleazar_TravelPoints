@@ -14,6 +14,7 @@ import AttractionsPage from './AttractionsPage'
 import AttractionPage from './AttractionPage'
 import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
+import WishlistPage from './WishlistPage'
 
 const queryClient = new QueryClient()
 
@@ -34,6 +35,7 @@ export default function App() {
               <Route path='profile' element={<p> Profil </p>} />
               <Route path='forgot-password' element={<ForgotPassword />} />
               <Route path='reset-password' element={<ResetPassword />} />
+              <Route path='wishlist' element={<WishlistPage />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

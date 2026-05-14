@@ -19,9 +19,12 @@ export default function Layout() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto align-items-center gap-3">
                             <Nav.Link href="/" className='text-dark fw-bold'>Home</Nav.Link>
-                            <Nav.Link href="/attractions" className='text-dark fw-bold'>Atractii</Nav.Link>
+                            <Nav.Link href="/attractions" className='text-dark fw-bold'>Atracții</Nav.Link>
+                            {isLoggedIn && (
+                                <Nav.Link href="/wishlist" className='text-dark fw-bold'>Wishlist</Nav.Link>
+                            )}
                             {isAdmin && (
-                                <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atractie noua</Nav.Link>
+                                <Nav.Link href="/newattraction" className='text-dark fw-bold'>Atracție Noua</Nav.Link>
                             )}
                             {isLoggedIn && <Notifications />}
 
