@@ -13,7 +13,7 @@ export function Landing() {
                 <p className='hero-description'>
                     Explorează cele mai frumoase destinații, planifică-ți itinerariul și creează amintiri pentru toată viața.
                 </p>
-                <Button className='btn-orange btn-glow'>
+                <Button className='btn-orange btn-glow' href="/attractions">
                     Start Exploring
                 </Button>
             </div>

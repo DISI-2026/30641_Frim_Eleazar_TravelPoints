@@ -1,11 +1,11 @@
-import { Button, ButtonGroup, Card, Container, Form, ListGroup, Modal, Spinner, ToggleButton } from "react-bootstrap";
+import { Button, ButtonGroup, Card, Col, Container, Form, Modal, Row, Spinner, ToggleButton } from "react-bootstrap";
 import { deleteAttraction, getAttractions, updateAttraction, type AttractionType } from '../API/attraction_api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from "react";
 import { AttractionForm } from "./NewAttraction";
 import './AttractionsPage.css'
 import { addWishlist, getWishlists, removeWishlist } from "../API/wishlist_api";
-import { FaExternalLinkAlt, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaRegHeart, FaTag, FaTrash, FaEdit } from "react-icons/fa";
 import { useLogin } from "../context/AuthContext";
 import { getAnalyticsPopularity } from "../API/analytics_api";
 import { Bar, Pie } from 'react-chartjs-2';
@@ -33,17 +33,17 @@ ChartJS.register(
 const DeleteModal = ({ show, onHide, onConfirm }: { show: boolean; onHide: () => void; onConfirm: () => void }) => (
     <Modal show={show} onHide={onHide} centered>
         <Modal.Header closeButton>
-            <Modal.Title>Confirm</Modal.Title>
+            <Modal.Title>Confirmare ștergere</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            Esti sigur ca doresti sa stergi aceasta atractie?
+            Ești sigur că dorești să ștergi această atracție? Această acțiune este ireversibilă.
         </Modal.Body>
         <Modal.Footer>
-            <Button variant="secondary" onClick={onHide}>
-                Cancel
+            <Button variant="secondary" onClick={onHide} className="rounded-pill px-4">
+                Anulează
             </Button>
-            <Button variant="danger" onClick={onConfirm}>
-                Delete
+            <Button variant="danger" onClick={onConfirm} className="rounded-pill px-4">
+                Șterge
             </Button>
         </Modal.Footer>
     </Modal>
@@ -57,7 +57,7 @@ type AttractionFilter = {
 
 
 export default function AttractionsPage() {
-    const { isLoggedIn,role } = useLogin()
+    const { isLoggedIn, role } = useLogin()
     const queryClient = useQueryClient();
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [attractionToEdit, setAttractionToEdit] = useState<AttractionType | null>(null);
@@ -90,38 +90,40 @@ export default function AttractionsPage() {
         enabled: isLoggedIn
     })
 
-    // Afisam spinner-ul cat timp se incarca datele
     if (isLoading || (isLoggedIn && isWishlistLoading)) {
         return (
-            <div className="text-center mt-5">
-                <Spinner animation="border" />
+            <div className="text-center mt-5 py-5">
+                <Spinner animation="border" variant="warning" />
+                <p className="mt-2 text-muted">Se încarcă atracțiile...</p>
             </div>
         )
     }
 
-    // Apoi verificam daca a aparut o eroare de la server
     if (isError) {
         return (
-            <h2>Eroare: {error.message}</h2>
+            <Container className="mt-5 text-center">
+                <h2 className="text-danger">Eroare: {error.message}</h2>
+                <Button onClick={() => window.location.reload()} variant="outline-primary" className="mt-3">Reîncearcă</Button>
+            </Container>
         )
     }
 
-    // La final, daca incarcarea a terminat dar lista tot e goala
     if (attractions === undefined || attractions.length === 0) {
         return (
-            <h2>Nu am gasit atractii</h2>
+            <Container className="mt-5 text-center">
+                <h2>Nu am găsit atracții</h2>
+                <Button href="/newattraction" className="btn-orange mt-3">Adaugă prima atracție</Button>
+            </Container>
         )
     }
 
     const handleConfirmDelete = async () => {
-        if (!attractionToEdit) {
-            console.error("No attraction selected for deletion");
-            return;
-        }
+        if (!attractionToEdit) return;
         await deleteAttraction(attractionToEdit).then((res) => {
             if (res.success) {
                 setConfirmDelete(false);
                 setAttractionToEdit(null);
+                queryClient.invalidateQueries({ queryKey: ["attractions"] });
             } else {
                 alert(res.error);
             }
@@ -131,13 +133,11 @@ export default function AttractionsPage() {
     }
 
     const onSubmitHandler = async (values: AttractionType) => {
-        if (!attractionToEdit) {
-            console.error("No attraction selected for update");
-            return;
-        }
+        if (!attractionToEdit) return;
         await updateAttraction(values).then((res) => {
             if (res.success) {
                 setAttractionToEdit(null);
+                queryClient.invalidateQueries({ queryKey: ["attractions"] });
             } else {
                 alert(res.error);
             }
@@ -147,12 +147,8 @@ export default function AttractionsPage() {
     }
 
     const toggleWishlist = async (attractionId: string) => {
-        if (wishlists === undefined) {
-            return
-        }
-
+        if (wishlists === undefined) return;
         const isAlreadyInWishlist = wishlists.some((wl) => String(wl.id) === String(attractionId));
-
         if (isAlreadyInWishlist) {
             await removeWishlist(attractionId).then((res) => {
                 if (!res.success) alert(res.error);
@@ -162,128 +158,167 @@ export default function AttractionsPage() {
                 if (!res.success) alert(res.error);
             });
         }
-
-        // <-- SOLUTIA: Spunem React Query sa faca refetch instant la wishlist
         queryClient.invalidateQueries({ queryKey: ["wishlists"] });
     }
 
     return (
-        <Container>
+        <Container className="attractions-container">
             <DeleteModal show={confirmDelete} onHide={() => { setAttractionToEdit(null); setConfirmDelete(false) }} onConfirm={handleConfirmDelete} />
             {attractionToEdit && !confirmDelete &&
-                <Modal contentClassName="clear-modal-body" show onHide={() => setAttractionToEdit(null)}><AttractionForm isEditing initialValues={attractionToEdit} onSubmitFunc={onSubmitHandler} /></Modal>
+                <Modal contentClassName="clear-modal-body" show onHide={() => setAttractionToEdit(null)} centered>
+                    <AttractionForm isEditing initialValues={attractionToEdit} onSubmitFunc={onSubmitHandler} />
+                </Modal>
             }
 
-            <h1>Atracții</h1>
-            <Button className="btn-orange btn-slim" href="/newattraction">Creeza o noua atractie</Button>
+            <div className="d-flex justify-content-between align-items-end mb-5">
+                <div>
+                    <h1 className="attractions-title mb-0">Explorează Atracții</h1>
+                    <p className="text-muted mt-2">Descoperă cele mai frumoase locuri și planifică-ți următoarea aventură.</p>
+                </div>
+                {role === 'ROLE_ADMIN' && (
+                    <Button className="btn-orange rounded-pill px-4 py-2 fw-bold shadow-sm" href="/newattraction">
+                        + Atracție Nouă
+                    </Button>
+                )}
+            </div>
 
-            {isWishlistError && <h2>{wishlistError instanceof Error ? wishlistError.message : "Eroare la incarcarea wishlists"}</h2>}
+            {isWishlistError && <div className="alert alert-danger mb-4">{wishlistError instanceof Error ? wishlistError.message : "Eroare la încărcarea wishlist-ului"}</div>}
 
-            <Form className="row mb-4">
-                <Form.Group className="col-md-4 mb-3" controlId="attractionName">
-                    <Form.Label>Cauta dupa nume</Form.Label>
-                    <Form.Control type="text" placeholder="Numele atractiei"
-                        value={attractionFilter.name}
-                        onChange={(e) => setAttractionFilter({ ...attractionFilter, name: e.target.value })}
-                    />
-                </Form.Group>
-
-                <Form.Group className="col-md-4 mb-3" controlId="location">
-                    <Form.Label>Filtreaza dupa locatie</Form.Label>
-                    <Form.Select
-                        value={attractionFilter.location}
-                        onChange={(e) => setAttractionFilter({ ...attractionFilter, location: e.target.value })}
-                    >
-                        <option value="">Toate locatiile</option>
-                        {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-                    </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="col-md-4 mb-3" controlId="category">
-                    <Form.Label>Filtreaza dupa categorie</Form.Label>
-                    <Form.Select
-                        value={attractionFilter.category}
-                        onChange={(e) => setAttractionFilter({ ...attractionFilter, category: e.target.value })}
-                    >
-                        <option value="">Toate categoriile</option>
-                        {uniqueCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </Form.Select>
-                </Form.Group>
-            </Form>
+            <div className="filter-section mb-5">
+                <Form className="row g-3">
+                    <Col md={4}>
+                        <Form.Label className="filter-label">Caută după nume</Form.Label>
+                        <Form.Control
+                            className="filter-input"
+                            type="text"
+                            placeholder="Ex: Castelul Bran..."
+                            value={attractionFilter.name}
+                            onChange={(e) => setAttractionFilter({ ...attractionFilter, name: e.target.value })}
+                        />
+                    </Col>
+                    <Col md={4}>
+                        <Form.Label className="filter-label">Locație</Form.Label>
+                        <Form.Select
+                            className="filter-input"
+                            value={attractionFilter.location}
+                            onChange={(e) => setAttractionFilter({ ...attractionFilter, location: e.target.value })}
+                        >
+                            <option value="">Toate locațiile</option>
+                            {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                        </Form.Select>
+                    </Col>
+                    <Col md={4}>
+                        <Form.Label className="filter-label">Categorie</Form.Label>
+                        <Form.Select
+                            className="filter-input"
+                            value={attractionFilter.category}
+                            onChange={(e) => setAttractionFilter({ ...attractionFilter, category: e.target.value })}
+                        >
+                            <option value="">Toate categoriile</option>
+                            {uniqueCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        </Form.Select>
+                    </Col>
+                </Form>
+            </div>
 
             {role === 'ROLE_ADMIN' && (
-                <>
-                    <ButtonGroup>
-                        {[true, false].map((radio, idx) => (
-                            <ToggleButton
-                                key={idx}
-                                id={`radio-${idx}`}
-                                type="radio"
-                                variant={idx % 2 ? 'outline-primary' : 'outline-success'}
-                                name="radio"
-                                value={radio ? "Pie" : "Chart"}
-                                checked={isPopularityPieChart === radio}
-                                onChange={(e) => setIsPopularityPieChart(e.currentTarget.value == "Pie")}
-                            >
-                                {radio ? "Pie" : "Chart"}
-                            </ToggleButton>
-                        ))}
-                    </ButtonGroup>
+                <div className="popularity-chart-container mb-5">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h4 className="mb-0 fw-bold">Popularitate</h4>
+                        <ButtonGroup className="bg-light p-1 rounded-pill shadow-sm border">
+                            {[true, false].map((radio, idx) => (
+                                <ToggleButton
+                                    key={idx}
+                                    id={`radio-${idx}`}
+                                    type="radio"
+                                    variant="link"
+                                    className={`rounded-pill px-4 py-1 text-decoration-none border-0 ${isPopularityPieChart === radio ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}`}
+                                    name="radio"
+                                    value={radio ? "Pie" : "Bar"}
+                                    checked={isPopularityPieChart === radio}
+                                    onChange={(e) => setIsPopularityPieChart(e.currentTarget.value == "Pie")}
+                                >
+                                    {radio ? "Pie" : "Bar"}
+                                </ToggleButton>
+                            ))}
+                        </ButtonGroup>
+                    </div>
                     <PopularityChart is_pie={isPopularityPieChart} />
-                </>
+                </div>
             )}
 
-            <ListGroup>
+            <Row xs={1} md={2} lg={3} className="g-4">
                 {attractions.filter((att) => {
                     const matchName = attractionFilter.name ? att.name.toLowerCase().includes(attractionFilter.name.toLowerCase()) : true;
                     const matchLocation = attractionFilter.location ? att.location === attractionFilter.location : true;
                     const matchCategory = attractionFilter.category ? att.category === attractionFilter.category : true;
                     return matchName && matchLocation && matchCategory;
                 }).map((attraction, index) => (
-                    <ListGroup.Item key={index}>
-                        <Card>
-                            <Card.Body>
-                                <Card.Title>{attraction.name}
-                                    <Button href={`/attraction/${attraction.id}`} variant="outline">
-                                        <FaExternalLinkAlt />
-                                    </Button>
-                                </Card.Title>
-                                <Card.Text>{attraction.description}</Card.Text>
-                                <Card.Text>{attraction.location}</Card.Text>
+                    <Col key={index}>
+                        <Card className="attraction-card h-100 border-0">
+                            <Card.Body className="d-flex flex-column p-4">
+                                {isLoggedIn && (
+                                    <button
+                                        onClick={() => toggleWishlist(String(attraction.id))}
+                                        className={`wishlist-toggle-btn shadow-sm ${wishlists?.some((wl) => String(wl.id) === String(attraction.id)) ? 'active' : ''}`}
+                                    >
+                                        {wishlists?.some((wl) => String(wl.id) === String(attraction.id)) ? <FaHeart /> : <FaRegHeart />}
+                                    </button>
+                                )}
 
+                                <Card.Title className="attraction-card-title fw-bold mb-3">{attraction.name}</Card.Title>
 
-                                <Button variant="text" className="btn-orange mx-3 py-2 rounded-pill" onClick={() => setAttractionToEdit(attraction)}>Edit</Button>
-                                <Button variant="danger" className="btn-slim" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>Delete</Button>
-
-                                {(wishlists === undefined || isLoggedIn == false) ?
-                                    <Button href="/login" variant="text" className="btn-glow btn-slim p-2 rounded-5 py-1 m-2">
-                                        <FaRegHeart />
-                                    </Button>
-                                    :
-                                    (
-                                        <Button
-                                            onClick={() => toggleWishlist(String(attraction.id))}
-                                            variant="text"
-                                            className="btn-glow btn-slim p-2 rounded-5 py-1 m-2"
-                                        >
-                                            {wishlists.some((wl) => String(wl.id) === String(attraction.id)) ? (
-                                                <FaHeart />
-                                            ) : (
-                                                <FaRegHeart />
-                                            )}
-                                        </Button>
+                                <div className="meta-info mb-3">
+                                    <div className="meta-item">
+                                        <FaMapMarkerAlt className="meta-icon" />
+                                        {attraction.location}
+                                    </div>
+                                    {attraction.entryPrice !== undefined && attraction.entryPrice !== null && (
+                                        <div className="meta-item">
+                                            <FaTag className="meta-icon" />
+                                            {attraction.entryPrice} RON
+                                        </div>
                                     )}
+                                </div>
+
+                                <Card.Text className="attraction-desc flex-grow-1 text-muted mb-3">
+                                    {attraction.description}
+                                </Card.Text>
+
+                                {attraction.offers && (
+                                    <div className="offers-tag mb-4">
+                                        {attraction.offers}
+                                    </div>
+                                )}
+
+                                <div className="d-flex justify-content-between align-items-center mt-auto">
+                                    <div className="admin-actions">
+                                        {role === 'ROLE_ADMIN' && (
+                                            <>
+                                                <Button variant="link" className="p-0 text-dark me-2" onClick={() => setAttractionToEdit(attraction)}>
+                                                    <FaEdit size={20} />
+                                                </Button>
+                                                <Button variant="link" className="p-0 text-danger" onClick={() => { setAttractionToEdit(attraction); setConfirmDelete(true) }}>
+                                                    <FaTrash size={18} />
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                    <Button href={`/attraction/${attraction.id}`} className="btn-details-modern rounded-pill px-4">
+                                        Vezi detalii
+                                    </Button>
+                                </div>
                             </Card.Body>
                         </Card>
-                    </ListGroup.Item>
+                    </Col>
                 ))}
-            </ListGroup>
+            </Row>
         </Container >
     );
 }
 
 function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
-    const { isLoggedIn,role } = useLogin()
+    const { isLoggedIn, role } = useLogin()
 
     const { data: popularity, isError: isPopularityError, error: popularityError, isLoading: isPopularityLoading } = useQuery({
         queryKey: ["popularity"],
@@ -293,85 +328,76 @@ function PopularityChart({ is_pie = true }: { is_pie: boolean }) {
             }
             return res.data
         }),
-        enabled: isLoggedIn&& role === 'ROLE_ADMIN'
+        enabled: isLoggedIn && role === 'ROLE_ADMIN'
     })
 
-    if (!isLoggedIn|| role !== 'ROLE_ADMIN') return undefined
+    if (!isLoggedIn || role !== 'ROLE_ADMIN') return undefined
 
     if (isPopularityLoading)
-        return <>
-            Incarcare detalii popularitate <Spinner />
-        </>
+        return <div className="text-center py-4"><Spinner animation="border" variant="warning" /><p>Se încarcă datele...</p></div>
 
     if (isPopularityError)
-        return <p>Eroare la gasirea popularitatii atractiilor: {popularityError.message}</p>
+        return <p className="text-danger text-center">Eroare la încărcarea datelor: {popularityError.message}</p>
 
     if (!popularity)
-        return <p>Eroare la gasirea popularitatii atractiilor</p>
+        return <p className="text-center">Nu există date disponibile pentru grafic.</p>
+
+    const chartData = {
+        labels: popularity.map((item) => item.name),
+        datasets: [
+            {
+                label: 'Vizite',
+                data: popularity.map((item) => item.views),
+                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(255, 140, 0, 0.7)',
+                    'rgba(255, 174, 66, 0.7)',
+                    'rgba(255, 98, 0, 0.7)',
+                    'rgba(255, 193, 7, 0.7)',
+                    'rgba(255, 87, 34, 0.7)',
+                ],
+                borderColor: [
+                    'rgba(255, 140, 0, 1)',
+                    'rgba(255, 174, 66, 1)',
+                    'rgba(255, 98, 0, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(255, 87, 34, 1)',
+                ],
+            },
+        ],
+    };
+
+    const commonOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom' as const,
+            },
+        },
+    };
 
     if (is_pie)
-        return (<div style={{ marginTop: '20px', width: '50%' }}>
-            <Pie options={{
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom' as const,
-                    },
-                    title: {
-                        display: true,
-                        text: 'Popularitatea atractiilor',
-                    },
-                },
-            }}
-                data={{
-                    labels: popularity.map((item) => item.name),
-                    datasets: [
-                        {
-                            label: 'Vizite',
-                            data: popularity.map((item) => item.views),
-                            borderWidth: 1,
-                            backgroundColor: [
-                                'rgba(54, 162, 235, 0.8)',
-                                'rgba(75, 192, 192, 0.8)',
-                                'rgba(255, 206, 86, 0.8)',
-                                'rgba(153, 102, 255, 0.8)',
-                            ],
-                            borderColor: [
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(153, 102, 255, 1)',
-                            ],
-                        },
-                    ],
-                }}
-            /> </div>)
+        return (
+            <div style={{ margin: '0 auto', maxWidth: '400px' }}>
+                <Pie options={commonOptions} data={chartData} />
+            </div>
+        )
 
     return (
-        <Bar options={{
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom' as const,
-                },
-                title: {
-                    display: true,
-                    text: 'Popularitatea atractiilor',
-                },
-            },
-        }}
-            data={{
-                labels: popularity.map((item) => item.name),
-                datasets: [
-                    {
-                        label: 'Vizite',
-                        data: popularity.map((item) => item.views),
-                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1,
-                    },
-                ],
-            }}
-        />
+        <div style={{ height: '300px' }}>
+            <Bar
+                options={{
+                    ...commonOptions,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }}
+                data={chartData}
+            />
+        </div>
     )
 }

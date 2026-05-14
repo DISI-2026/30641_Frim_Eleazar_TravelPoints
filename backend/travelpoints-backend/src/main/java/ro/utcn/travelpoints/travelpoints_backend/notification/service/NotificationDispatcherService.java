@@ -12,14 +12,17 @@ import ro.utcn.travelpoints.travelpoints_backend.wishlist.repository.WishlistRep
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Mentine conexiunile SSE per utilizator si trimite notificari de tip "Oferte actualizate".
- * Filtreaza clientii conectati astfel incat sa primeasca push-ul DOAR utilizatorii care
- * au atractia respectiva salvata in lista de favorite/wishlist.
+ * Mentine conexiunile SSE per utilizator (cheie = email) si trimite notificari
+ * de tip "Oferte actualizate". Filtreaza clientii conectati astfel incat sa primeasca
+ * push-ul DOAR utilizatorii care au atractia respectiva salvata in lista de favorite/wishlist.
+ *
+ * Folosim email-ul (citit direct din JWT) ca cheie in loc de UUID ca sa evitam un lookup
+ * suplimentar in baza de date la fiecare conectare SSE — altfel, cu open-in-view, conexiunea
+ * JDBC ar fi tinuta deschisa pe toata durata stream-ului (30 min) si pool-ul s-ar epuiza.
  */
 @Service
 @RequiredArgsConstructor
@@ -30,29 +33,29 @@ public class NotificationDispatcherService {
 
     private final WishlistRepository wishlistRepository;
 
-    /** Mapare userId -> lista de emitter-e active (un user poate avea mai multe tab-uri). */
-    private final Map<UUID, List<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
+    /** Mapare email -> lista de emitter-e active (un user poate avea mai multe tab-uri). */
+    private final Map<String, List<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
 
     /**
-     * Inregistreaza un nou client SSE pentru utilizatorul dat.
+     * Inregistreaza un nou client SSE pentru utilizatorul cu email-ul dat.
      */
-    public SseEmitter register(UUID userId) {
+    public SseEmitter register(String email) {
         SseEmitter emitter = new SseEmitter(SSE_TIMEOUT_MS);
 
-        userEmitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>()).add(emitter);
+        userEmitters.computeIfAbsent(email, k -> new CopyOnWriteArrayList<>()).add(emitter);
 
-        emitter.onCompletion(() -> removeEmitter(userId, emitter));
+        emitter.onCompletion(() -> removeEmitter(email, emitter));
         emitter.onTimeout(() -> {
             emitter.complete();
-            removeEmitter(userId, emitter);
+            removeEmitter(email, emitter);
         });
         emitter.onError(ex -> {
-            log.debug("SSE emitter error for user {}: {}", userId, ex.getMessage());
-            removeEmitter(userId, emitter);
+            log.debug("SSE emitter error for user {}: {}", email, ex.getMessage());
+            removeEmitter(email, emitter);
         });
 
         log.info("SSE emitter registered for user {} (total active: {})",
-                userId, userEmitters.get(userId).size());
+                email, userEmitters.get(email).size());
         return emitter;
     }
 
@@ -75,8 +78,8 @@ public class NotificationDispatcherService {
 
         int delivered = 0;
         for (Wishlist w : wishlists) {
-            UUID targetUserId = w.getUser().getId();
-            List<SseEmitter> emitters = userEmitters.get(targetUserId);
+            String targetEmail = w.getUser().getEmail();
+            List<SseEmitter> emitters = userEmitters.get(targetEmail);
             if (emitters == null || emitters.isEmpty()) {
                 continue; // utilizatorul nu este conectat in acest moment
             }
@@ -87,8 +90,8 @@ public class NotificationDispatcherService {
                     emitter.send(SseEmitter.event().data(payload));
                     delivered++;
                 } catch (IOException e) {
-                    log.debug("Failed to push to user {}: {}", targetUserId, e.getMessage());
-                    removeEmitter(targetUserId, emitter);
+                    log.debug("Failed to push to user {}: {}", targetEmail, e.getMessage());
+                    removeEmitter(targetEmail, emitter);
                 }
             }
         }
@@ -96,12 +99,12 @@ public class NotificationDispatcherService {
                 attraction.getId(), delivered, wishlists.size());
     }
 
-    private void removeEmitter(UUID userId, SseEmitter emitter) {
-        List<SseEmitter> list = userEmitters.get(userId);
+    private void removeEmitter(String email, SseEmitter emitter) {
+        List<SseEmitter> list = userEmitters.get(email);
         if (list != null) {
             list.remove(emitter);
             if (list.isEmpty()) {
-                userEmitters.remove(userId);
+                userEmitters.remove(email);
             }
         }
     }

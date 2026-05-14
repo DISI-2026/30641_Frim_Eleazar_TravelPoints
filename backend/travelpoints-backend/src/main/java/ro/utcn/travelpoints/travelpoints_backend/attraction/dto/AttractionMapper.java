@@ -16,10 +16,10 @@ public class AttractionMapper {
                 attraction.getDescriptionAudioUrl(),
                 attraction.getEntryPrice(),
                // attraction.getLocation().getId(),
-                attraction.getLocation().getName(),
+                attraction.getLocation() != null ? attraction.getLocation().getName() : null,
               //  attraction.getCategory().getId(),
-                attraction.getCategory().getName(),
-                attraction.getCreatedBy().getId(),
+                attraction.getCategory() != null ? attraction.getCategory().getName() : null,
+                attraction.getCreatedBy() != null ? attraction.getCreatedBy().getId() : null,
                 attraction.getOffers()
         );
     }

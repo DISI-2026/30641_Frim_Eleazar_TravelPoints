@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Container, Button, ButtonGroup, Spinner, Alert } from 'react-bootstrap';
+import { Container, ButtonGroup, Spinner, Alert, ToggleButton } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -38,7 +38,7 @@ function processChartData(
             labels: hourlyData.map(d => d.hour),
             datasets: [
                 {
-                    label: 'Visits',
+                    label: 'Vizitatori',
                     data: hourlyData.map(d => d.visits),
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1,
@@ -51,7 +51,7 @@ function processChartData(
             labels: monthlyData.map(d => d.month),
             datasets: [
                 {
-                    label: 'Visits',
+                    label: 'Vizitatori',
                     data: monthlyData.map(d => d.visits),
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1,
@@ -63,7 +63,7 @@ function processChartData(
     return {
         labels: rawData.map(d => 'hour' in d ? d.hour : d.month),
         datasets: [{
-            label: 'Visits',
+            label: 'Vizitatori',
             data: rawData.map(d => d.visits),
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1,
@@ -102,7 +102,7 @@ const Analytics = ({ attraction_id }: { attraction_id: string }) => {
     const chartData = (isLoading || isError) ? {
         labels: [],
         datasets: [{
-            label: 'Visits',
+            label: 'Vizitatori',
             data: [],
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1,
@@ -122,8 +122,8 @@ const Analytics = ({ attraction_id }: { attraction_id: string }) => {
                 }
             },
             title: {
-                display: true,
-                text: granularity === 'hour' ? 'Fluxul de vizitatori - Detalii pe ore' : 'Fluxul de vizitatori - Sumar pe luni',
+                display: false,
+                text: 'Vizitatori',
                 font: {
                     size: 16,
                     weight: 'bold' as const
@@ -143,20 +143,26 @@ const Analytics = ({ attraction_id }: { attraction_id: string }) => {
     return (
         <Container className="mt-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h4>Analitică - Fluxul de Vizitatori</h4>
-                <ButtonGroup>
-                    <Button
-                        variant={granularity === 'hour' ? 'primary' : 'outline-primary'}
-                        onClick={() => handleGranularityChange('hour')}
-                    >
-                        Pe ore
-                    </Button>
-                    <Button
-                        variant={granularity === 'month' ? 'primary' : 'outline-primary'}
-                        onClick={() => handleGranularityChange('month')}
-                    >
-                        Pe luni
-                    </Button>
+                <h4 className="mb-0 fw-bold">Flux Vizitatori</h4>
+                <ButtonGroup className="bg-light p-1 rounded-pill shadow-sm border">
+                    {[
+                        { label: 'Ore', value: 'hour' },
+                        { label: 'Luni', value: 'month' }
+                    ].map((radio, idx) => (
+                        <ToggleButton
+                            key={idx}
+                            id={`radio-analytics-${idx}`}
+                            type="radio"
+                            variant="link"
+                            className={`rounded-pill px-4 py-1 text-decoration-none border-0 ${granularity === radio.value ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}`}
+                            name="radio-analytics"
+                            value={radio.value}
+                            checked={granularity === radio.value}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleGranularityChange(e.currentTarget.value as 'hour' | 'month')}
+                        >
+                            {radio.label}
+                        </ToggleButton>
+                    ))}
                 </ButtonGroup>
             </div>
 

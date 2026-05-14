@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# TravelPoints Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TravelPoints is a React-based single-page application (SPA) designed for exploring and managing tourist attractions. It provides a dedicated interface for both tourists and administrators, offering attraction discovery, wishlist management, reviews, and analytics.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Role-Based Access Control**: Differentiates between 'Tourist' and 'Admin' roles using JWT-based authentication.
+- **Attraction Catalog**: Browse attractions with real-time filtering by name, location, and category.
+- **Wishlist Management**: Authenticated users can save and manage their favorite attractions.
+- **Audio Guides**: Integrated audio players for attractions offering guided tours.
+- **Reviews & Contact**: Users can submit reviews for attractions or contact administrators with suggestions.
+- **Administrative Tools**: Admins can create, edit, and delete attractions.
+- **Analytics Dashboard**: Visual representations of attraction popularity and visitor flux over time using interactive charts.
+- **Real-Time Notifications**: Server-Sent Events (SSE) integration for real-time updates.
 
-## React Compiler
+## Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 19, TypeScript
+- **Build Tool**: Vite
+- **Routing**: React Router v7
+- **Data Fetching & Caching**: TanStack Query (React Query) v5
+- **UI & Styling**: React Bootstrap, Custom CSS
+- **Data Visualization**: Chart.js, react-chartjs-2
+- **Forms & Validation**: Formik, Yup
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js (v18 or higher recommended)
+- npm (Node Package Manager)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository and navigate to the project directory.
+2. Install the project dependencies:
+
+   ```bash
+   npm install
+   ```
+
+### Configuration
+
+The application communicates with a backend API. Ensure your backend is running. The API endpoints can be configured using environment variables in a `.env` file (e.g., `VITE_API_ENTRYPOINT`). By default, it will fall back to the window host.
+
+### Development
+
+To start the local development server with hot-module replacement (HMR):
+
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The application will be accessible at `http://localhost:5173` (or the port specified by Vite).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Production Build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+To create an optimized production build:
+
+```bash
+npm run build
+```
+
+This will generate the built assets in the `dist` directory. You can preview the production build locally using:
+
+```bash
+npm run preview
 ```

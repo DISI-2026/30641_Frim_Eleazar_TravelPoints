@@ -1,9 +1,9 @@
-.attractions-container {
-    max-width: 1200px;
+.wishlist-container {
+    max-width: 900px;
     margin: 40px auto;
 }
 
-.attractions-title {
+.wishlist-title {
     color: #1a1a1a;
     font-weight: 900;
     letter-spacing: -0.5px;
@@ -11,7 +11,7 @@
     padding-bottom: 10px;
 }
 
-.attractions-title::after {
+.wishlist-title::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -22,37 +22,7 @@
     border-radius: 2px;
 }
 
-/* Modern Filter Styles */
-.filter-section {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    margin-bottom: 40px;
-}
-
-.filter-label {
-    font-weight: 700;
-    color: #4b4b4b;
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-}
-
-.filter-input {
-    border-radius: 12px !important;
-    border: 1px solid #eee !important;
-    padding: 10px 15px !important;
-    font-size: 0.95rem !important;
-    transition: all 0.2s ease !important;
-}
-
-.filter-input:focus {
-    border-color: #ff8c00 !important;
-    box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1) !important;
-}
-
-/* Card Styles (Consistent with Wishlist) */
-.attraction-card {
+.wishlist-card {
     border-radius: 20px;
     border: none;
     background: #ffffff;
@@ -63,7 +33,7 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
 }
 
-.attraction-card::before {
+.wishlist-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -74,22 +44,22 @@
     transition: width 0.3s ease;
 }
 
-.attraction-card:hover {
+.wishlist-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
 }
 
-.attraction-card:hover::before {
+.wishlist-card:hover::before {
     width: 8px;
 }
 
-.attraction-card-title {
-    font-size: 1.3rem;
+.wishlist-card-title {
+    font-size: 1.4rem;
     color: #2d3436;
     margin-right: 40px;
 }
 
-.wishlist-toggle-btn {
+.wishlist-heart-btn {
     position: absolute;
     top: 15px;
     right: 15px;
@@ -105,41 +75,63 @@
     padding: 0;
     font-size: 1.2rem;
     transition: all 0.2s ease;
-    z-index: 10;
 }
 
-.wishlist-toggle-btn.active {
-    background: #ff6b6b;
-    color: white;
-}
-
-.wishlist-toggle-btn:hover {
+.wishlist-heart-btn:hover, .wishlist-heart-btn:focus {
+    background: #ff6b6b !important;
+    color: white !important;
     transform: scale(1.1);
 }
 
-.admin-actions {
+.meta-info {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
-.btn-admin-edit {
-    background-color: #f8f9fa;
-    color: #2d3436;
-    border: 1px solid #eee;
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #636e72;
+    background: #f8f9fa;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.meta-icon {
+    color: #ff8c00;
+}
+
+.attraction-desc {
+    color: #4b4b4b;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.offers-tag {
+    font-size: 0.85rem;
+    color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 10px;
     font-weight: 600;
 }
 
-.btn-admin-edit:hover {
-    background-color: #eee;
-}
-
-.btn-details-modern {
-    padding: 8px 20px;
+.btn-details {
+    padding: 10px 25px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     background-color: #ff8c00;
     border: none;
     box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
@@ -147,23 +139,9 @@
     color: white;
 }
 
-.btn-details-modern:hover {
+.btn-details:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(255, 140, 0, 0.3);
     background-color: #e67e00;
     color: white;
-}
-
-.clear-modal-body {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.popularity-chart-container {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    margin-bottom: 40px;
 }

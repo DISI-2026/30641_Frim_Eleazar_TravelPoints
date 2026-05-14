@@ -1,0 +1,242 @@
+.attraction-page-container {
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+/* Header Section */
+.attraction-header {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+}
+
+.attraction-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(to bottom, #ff8c00, #ffae42);
+}
+
+.attraction-main-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: -1px;
+    margin-bottom: 15px;
+}
+
+.attraction-full-desc {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #4b4b4b;
+    margin-bottom: 25px;
+}
+
+.wishlist-toggle-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    border: none;
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.5rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.wishlist-toggle-btn.active {
+    background: #ff6b6b;
+    color: white;
+}
+
+.wishlist-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2);
+}
+
+/* Audio Section */
+.audio-container {
+    background: rgba(255, 140, 0, 0.03);
+    padding: 25px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 140, 0, 0.1) !important;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.audio-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.audio-icon-wrapper {
+    background: #ff8c00;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
+}
+
+.audio-label {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #2d3436;
+    margin: 0;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.audio-player-custom {
+    height: 40px;
+    width: 100%;
+}
+
+/* Analytics Container */
+.analytics-section {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-top: 50px;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.review-card {
+    border: none;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+
+.review-card:hover {
+    transform: translateX(5px);
+}
+
+.review-author {
+    font-weight: 800;
+    color: #2d3436;
+    font-size: 1rem;
+}
+
+.review-text {
+    color: #636e72;
+    line-height: 1.6;
+}
+
+/* Modals */
+.modern-modal .modal-content {
+    border-radius: 28px;
+    border: none;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.modern-modal .modal-header {
+    border: none;
+    padding-bottom: 20px;
+}
+
+.modern-modal .modal-header .btn-close {
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    padding: 10px;
+    margin: -10px -10px -10px auto;
+    transition: all 0.2s ease;
+}
+
+.modern-modal .modal-header .btn-close:hover {
+    background-color: #eee;
+    transform: rotate(90deg);
+}
+
+.modern-modal .modal-title {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.modern-modal .modal-body {
+    padding-top: 0;
+}
+
+.modern-modal .modal-footer {
+    border: none;
+    padding-top: 20px;
+    gap: 15px;
+}
+
+.btn-contact {
+    background-color: transparent;
+    border: 2px solid #ff8c00;
+    color: #ff8c00;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn-contact:hover {
+    background-color: #ff8c00;
+    color: white;
+}
+
+.filter-label {
+    font-weight: 700;
+    color: #4b4b4b;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.filter-input {
+    border-radius: 12px !important;
+    border: 1px solid #eee !important;
+    padding: 10px 15px !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.filter-input:focus {
+    border-color: #ff8c00 !important;
+    box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1) !important;
+}
+
+.filter-input:disabled {
+    background-color: #f8f9fa !important;
+    color: #b2bec3 !important;
+}

@@ -9,6 +9,7 @@ export type AttractionType =
         audioFile: string | null;
         offers?: string;
         category: string;
+        entryPrice?: number;
     }
 
 export type ReviewType =
